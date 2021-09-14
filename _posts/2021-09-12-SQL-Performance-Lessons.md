@@ -19,7 +19,9 @@ So it wasn't immediately clear which codepaths were producing these queries. The
 
 As a bit of a tangent: Given this non-optimal process, we wanted to find a better way to label our queries. Unfortunately, slick doesn't support comments. So we tried to hack around it by introducing a dummy `select where "my_query_label" is not null` into our statements. This had the undesired effect of catastrophically blowing up our performance. My understanding of why is that these dummy clauses were being inserted deep into nested queries which involved left anti-joins which are not indexable. Therefore every row in the table was being scanned. We rolled back the change, but didn't find a great solution for this. 
 
-We were able to narrow the queries down to a few functions, and we found that the functions all called a helper function. 
+Some queries were easily identifable. Many of these were easily fixed by adding a simple index. 
+
+For the rest, we were able to narrow them down to a few functions, and we found that the functions all called a helper function. 
 
 **TODO** wasn't a major problem that the `query` was doing stuff too? like it wasn't just a base query but was doing extra stuff too?
 
@@ -58,26 +60,21 @@ select * from tbl1 join tbl2 on tbl1.x = tbl2.y
 
 if you have good indexes, this join will be quite efficient.
 
-However, if you use the overridden query, then you end up executing the inner statement.
+However, if you use the overridden query, then you end up executing the inner statement. This was bad in our case because `active` has just two values, so it's low cardinality, and is therefore not helped much by indexing (imagine most of your data is active, then you essentially are doing an almost full table scan).
 
-**TODO remember why that was bad again??**
+So we want only active records, but we want the less efficient query to happen later. To accomplish that we need to filter for `active` during/after the join, not before. So we couldn't use our `query` pattern for this and instead had to remember to do the join using `baseQuery`, and to also remember to filter for `active`. 
 
-objectives with writing this
-- handling the nebulous task of "optimize"
-- determining the source of slowness
-- usefulness of adding indexes (opine on how we were a sql noob)
-- how i tested/verified changes (load testing)
-- pitfall of orm / code patterns vs sql patterns
+**TODO note the 180k vs 4 rows example**
 
-- sql was generated and was hard to read - so kind of a pain in the ass to pin down the source
--   well-intentioned choice to hack in "comments" into the sql using a dummy "select where 'table_name' is not null" - resulted in catastrophic performance blowup lol
+So given these changes, our performance improved drastically. Instead of scanning on average 50k rows, we were now scanning about 10. 
+The biggest issue/takeaway I got from this was that patterns we value in code like abstraction and code reuse can actually be counter-productive in sql. 
+I grew up allergic to sql and databases, always using an ORM. My experience with rails and django also made it so that I didn't even have to write DDL either. I think this allowed me to develop a misunderstanding of how things worked for a long time. I've come to appreciate the idea that ORMs are not silver bullets, and for hotpaths, you will inevitably get closer and closer to writing raw sql.
 
-- some very simple cases were just adding indexes
+While I appreciate the desire for raw sql in extreme scenarios, slick gives us such a huge benefit over raw sql strings. It's stupidly easy to typo your sql, but slick is powerfully type-checked. It's good to be aware of the pitfalls, but it's still an extremely useful tool for most cases. 
 
-- some more involved cases were joins and figuring out why the joins didn't do well
--   left anti-join can't be optimized
--   orm was building generic queries b/c of how were using it... so you'd end up with a full-table scan in a sub-query inside an anti-join
--   solution was to refactor the code so that the filters were applied early
+**TODO section on load testing**
+
+
 
 
 
