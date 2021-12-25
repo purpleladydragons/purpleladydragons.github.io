@@ -34,6 +34,10 @@ In some cases, I've copied the library directories into the app project director
 More reliable though is to publish the libraries to pypi and do a normal pip install.
 
 ## Upload docker image to remote box
+We'll be tarring the image and uploading it to the remote box. It's imperative to ignore this tar file in the future
+otherwise our tar file will grow in size every time. So your `.dockerignore` should have something like `*.tar` in it 
+
+Then to upload and deploy the image we run the below commands. Optionally, we can remove the old image on the remotebox as well.
 ```shell
 $ docker build -t . my-docker-image
 $ docker save -o /absolute/path/to/save/tar/file.tar my-docker-image
