@@ -1,5 +1,5 @@
-At work, I recently was tasked with improving the performance of our database queries. 
-The motivation was that we had recently experienced a number of outages in a short timespan, after having had no outages at all in the year I had been working there.
+At a previous job, I had the pleasure of improving our web app's performance. 
+The motivation was that we had recently experienced a number of outages in a short timespan, after having had no outages at all in the year I had been working there at that point.
 We were able to observe that our database cpu utilization was maxed out. Using AWS RDS Performance Insights (PI), we were able to see that a few queries were extremely non-performant.
 
 PI shows you the average number of rows scanned per query, so it was easy to see that this wasn't strictly a problem of increased traffic; we knew upfront that our queries were bad. 
