@@ -49,7 +49,7 @@ The important part is that the helper query doesn't do any filtering of its own.
 
 And that's essentially what happened. The `filter` happens _after_ the join. Because it's used with a left anti-join, which can't be optimized, we end up running the near-full-table scan in the subquery before filtering for the single user we care about.
 
-We were able to fix this by parameterizing the helper function.\
+We were able to fix this by parameterizing the helper function.
 
 
 Another problem we ran into involved some abstractions we wrote.
