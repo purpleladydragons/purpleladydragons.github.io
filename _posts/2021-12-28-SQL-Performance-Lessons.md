@@ -86,7 +86,7 @@ So given these changes, our performance improved drastically. Instead of scannin
 The biggest issue/takeaway I got from this was that patterns we value in code like abstraction and code reuse can actually be counter-productive in sql. 
 I grew up allergic to sql and databases, always using an ORM. My experience with rails and django also made it so that I didn't even have to write DDL either. I think this allowed me to develop a misunderstanding of how things worked for a long time. I've come to appreciate the idea that ORMs are not silver bullets, and for hotpaths, you will inevitably get closer and closer to writing raw sql.
 
-While I appreciate the desire for raw sql in extreme scenarios, slick gives us such a huge benefit over raw sql strings. It's stupidly easy to typo your sql, but slick is powerfully type-checked. It's good to be aware of the pitfalls, but it's still an extremely useful tool for most cases. 
+While I appreciate the desire for raw sql in some scenarios, slick gave us such a huge benefit over raw sql strings. It's stupidly easy to typo your sql, but slick is powerfully type-checked. It's good to be aware of the pitfalls, but it's still an extremely useful tool for many cases. 
 
 
 
