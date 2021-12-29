@@ -16,7 +16,7 @@ join (select id, status from thing_status) x15
 
 So it wasn't immediately clear which codepaths were producing these queries. The process of investigation was basically looking at the human-readable table names in the query and using our own knowledge of the codebase to narrow down which functions make use of these tables. 
 
-As a bit of a tangent: Given this non-optimal process, we wanted to find a better way to label our queries. Unfortunately, slick doesn't support comments. So we tried to hack around it by introducing a dummy `select where "my_query_label" is not null` into our statements. This had the undesired effect of catastrophically blowing up our performance. My understanding of why is that these dummy clauses were being inserted deep into nested queries which involved left anti-joins which are not indexable. Therefore every row in the table was being scanned. We rolled back the change, but didn't find a great solution for this.
+As a bit of a tangent: Given this non-optimal process, we wanted to find a better way to label our queries. Unfortunately, slick doesn't support comments. So we tried to hack around it by introducing a dummy `select where 'my_query_label' is not null` into our statements. This had the undesired effect of catastrophically blowing up our performance. My understanding of why is that these dummy clauses were being inserted deep into nested queries which involved left anti-joins which are not indexable. Therefore every row in the table was being scanned. We rolled back the change, but didn't find a great solution for this.
 In the meantime though, this hack did help identify some functions.
 
 Some of the queries were simple and easily identifable. Many of these were easily fixed by adding a simple index. 
