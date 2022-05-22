@@ -81,3 +81,8 @@ and what does that mean.... there are multiple keys, making it easier to decrypt
 so... for the general problem m^e mod N, that is always easy for someone who knows p and q
 but to make it hard for other people, we also have to choose e smartly
 TODO - literally show an example of choosing e=2 or something (or idk fucking prove that it's not unique)
+
+so... once you show the stuff about e... then...
+it's really just person2 encrypts their message
+person1 can decrypt easily via the Euclidean algo or whatever (TODO show it)
+Eve can't do shit (prove it...)
