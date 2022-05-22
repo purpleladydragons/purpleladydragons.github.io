@@ -14,7 +14,7 @@ That means that for an eavesdropper to decrypt a private message, it should be (
 Clearly, if we chose something trivial for N like 15, then an eavesdropper would very immediately be able to break our code.
 So how do we choose a good N? 
 Well, it should be big. Factoring a number grows (TODO) exponentionally in the number of bits of the number (TODO exponential over bits doesn't that just mean exp(log) which is linear?)
-The hardest numbers to factor are those that are "semiprime".
+The hardest numbers to factor are those that are "semiprime". (TODO why can't N be prime itself?)
 Semiprime means that a number is a product of two primes. (TODO why isn't three primes even harder?)
 Why are these the hardest? Well what's the alternative? All numbers factor into primes ultimately. 
 A number close to N might have many more prime factors. This necessarily means the factors are smaller, and possibly repeated.
@@ -38,6 +38,8 @@ That's because ultimately, the fast algorithm to decrypt c back into m relies on
 
 This all felt extremely unintuitive to me so let's break it into steps and I'll try to show/prove why they work. 
 As for how they came up with this, well that's a lot harder and part of the reason it was such a huge accomplishment!
+Probably, it started with knowing that modulo exponentiation is very unintuitive and basically random as far as we can tell. 
+If you pass two numbers x and x+1 through modulo exponentiation, you get very different results (TODO not in all cases right? only under certain circumstances?)
 
 Alice wants to create her public key.
 She does so by choosing two secret values p and q. p and q should be very large primes. In practical details, there are some extra constraints around p and q because there are several tricks that make factoring N easier under certain conditions. [example](https://crypto.stackexchange.com/questions/13113/how-can-i-find-the-prime-numbers-used-in-rsa)
@@ -53,4 +55,16 @@ So that's very quick, to generate one, but to generate all of them, you'd need t
 (If you protest that this number includes small primes like 3 and 5 technically, then you can fix the largest bit to 1 and check for the remaining 2^511 options)
 
 Now that Alice has p and q, she can straightforwardly generate e as well. But why do we use e such that gcd(e, (p-1)(q-1)) = 1?
+
+Remember that modulo exponentiation is good for generating random results. m^e modulo N is going to hopefully produce a random looking output.
+But we have two problems to solve before we can go ahead with that:
+1. we want to make sure it really *is* hard for people that don't know p and q
+2. it has to be easy for someone who knows p and q, otherwise the intended receiver can't decrypt the message either
+
+(TODO this whole section)
+ah! now I understand. e has to be prime to (p-1)(q-1) in order to generate all the results right? 
+yes, that's how e is a primitive root of pq and generates all the values
+otherwise, e exponenting by e would... wait fuck man
+isn't it that the *base* is the root? so i don't get why e has to do this stuff...
+but this is related to FLT ultimately i think
 
