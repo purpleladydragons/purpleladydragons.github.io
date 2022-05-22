@@ -55,34 +55,13 @@ So that's very quick, to generate one, but to generate all of them, you'd need t
 (If you protest that this number includes small primes like 3 and 5 technically, then you can fix the largest bit to 1 and check for the remaining 2^511 options)
 
 Now that Alice has p and q, she can straightforwardly generate e as well. But why do we use e such that gcd(e, (p-1)(q-1)) = 1?
+Well, assuming someone encrypts a message to her via c = m^e mod N, how would she decrypt it? She'd want to undo the exponentiation essentially,
+which really means taking the inverse. So she's solving for x in x^e mod N = c. If we assume d is the inverse of e, then m = c^d.
+But here's the problem: d doesn't exist unless gcd(e, (p-1)(q-1)). 
 
-Remember that modulo exponentiation is good for generating random results. m^e modulo N is going to hopefully produce a random looking output.
-But we have two problems to solve before we can go ahead with that:
-1. we want to make sure it really *is* hard for people that don't know p and q
-2. it has to be easy for someone who knows p and q, otherwise the intended recipient can't decrypt the message either
+I will show you why: TODO proof of prop 1.13
+ 
 
-(TODO this whole section)
-ah! now I understand. e has to be prime to (p-1)(q-1) in order to generate all the results right? 
-yes, that's how e is a primitive root of pq and generates all the values
-otherwise, e exponenting by e would... wait fuck man
-isn't it that the *base* is the root? so i don't get why e has to do this stuff...
-but this is related to FLT ultimately i think
 
-(TODO section)
-ughhhh where even was i lol
-basically you assume/know that exponentiation is a good idea. so you take your message m and exponentiate it in some modulus
-how do you choose e and N? why not reverse them? well... N has to be bigger than e by definition of modulus and exponent, otherwise e is pointless
-but why don't we choose e as some prime stuff and N just randomly? idk
-god where the fuck does the e choice come from lol
-okay let's see... e has to be relatively prime because of prop 1.13... i'm guessing if it's not rel prime then there is more than one solution
-and what does that mean.... there are multiple keys, making it easier to decrypt? or you end up with multiple messages? 
-^^ i think multiple keys (d) because the idea would be that various of them get modded out to same message
 
-so... for the general problem m^e mod N, that is always easy for someone who knows p and q
-but to make it hard for other people, we also have to choose e smartly
-TODO - literally show an example of choosing e=2 or something (or idk fucking prove that it's not unique)
 
-so... once you show the stuff about e... then...
-it's really just person2 encrypts their message
-person1 can decrypt easily via the Euclidean algo or whatever (TODO show it)
-Eve can't do shit (prove it...)
