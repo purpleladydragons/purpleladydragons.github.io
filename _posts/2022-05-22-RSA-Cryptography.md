@@ -13,19 +13,27 @@ By "based on", I mean that the security of these systems ultimately depend on ho
 
 How does RSA work?
 
-First off, we've noted that it will ultimately use the difficulty of integer factorization as its security measure.
+### Integer factorization
+First off, we've noted that RSA will ultimately use the difficulty of integer factorization as its security measure.
 That means that for an eavesdropper to decrypt a private message, it should be (roughly) as hard as factoring some number N.
 Clearly, if we choose something trivial for N like 15, then an eavesdropper would very immediately be able to break our code.
 
 So how do we choose a good N? 
 
-Well, it should be big. Factoring a number grows (TODO) exponentionally in the number of bits of the number (TODO exponential over bits doesn't that just mean exp(log) which is linear?)
+Well, it should be big. Integer factorization is still an "unsolved" problem. We don't have any efficient algorithms for doing it, and they probably don't exist, but we don't know for sure (it basically boils down to P=NP). In general, for a number N that is b bits, we don't have any algorithms that run in polynomial time O(b^k). The best algorithms are sub-exponential. The [general number field sieve](https://en.wikipedia.org/wiki/General_number_field_sieve) is an example of the one of the most efficient algorithms.
+As an aside, Shor's algorithm provides a polynomial solution for factoring numbers, which means that quantum computers would/could render RSA obsolete as a secure system.
 
-The hardest numbers to factor are those that are "semiprime". (TODO why can't N be prime itself?)
-Semiprime means that a number is a product of two primes. (TODO why isn't three primes even harder?)
+Why can't N be prime itself? (TODO show why it doesn't work in RSA)
+
+The hardest numbers to factor are those that are "semiprime". 
+Semiprime means that a number is a product of two primes. 
 Why are these the hardest? Well what's the alternative? All numbers factor into primes ultimately. 
-A number close to N might have many more prime factors. This necessarily means the factors are smaller, and possibly repeated.
-This makes factoring significantly easier (it's easier to find smaller factors by brute force, and every time you do, you reduce the search space of further factors)
+Sure, if you multipled it by another prime factor that would be even harder, but the number would be much larger and makes the system slower in general.
+When we're compromising for practical speeds for the sender and recipient, we need to be mindful of limiting how large N is. 
+For a given rough value of N, the hardest to factor numbers are semiprime. Otherwise it has more factors which are necessarily smaller and possibly repeated.
+This makes factoring significantly easier, and many of the most efficient algorithms ultimately relate to the difficulty of finding the smallest prime factor.
+
+### Using N to encrypt and decrypt messages
 
 Okay so we know how to choose a big N now. How do we actually use this information to encrypt and decrypt a message?
 
@@ -39,23 +47,22 @@ It's generally held in consensus that the outputs are truly pseudorandom and not
 So to encrypt our message m, we will exponentiate it to somer power e, and then mod it by N: c = m^e mod N. 
 (TODO why do we use N as the modulus? because uhhh the decryption algorithm relates to the modulus and not to e)
 
+### Choosing e
+
+This is by far the longest section. Now that we've specified N, we have to satisfy some properties when choosing e for everything to work. 
+I've tried to present this choice as naturally as possible while also proving the results we need to justify our choice.
+
 We've said already that N should be a very large (1024 bits) semiprime number. But what should e be?
 To decrypt the ciphertext, we want to "undo" the encryption of our message m. m^e mod N = c means then that we want to find some decryption key d
 such that c^d^e = m mod N, implying de = 1 mod N (in other words, d is the multiplicative inverse of e modulo N)
-But does such a d even exist? Yes, iff e is coprime with N 
+But does such a d even exist? Yes, if (and only if) e is coprime with N 
 
 Proof:
+(TODO first prove thrm 1.11 / Bezout's identity)
+
 assume gcd(e, N) = 1
-By thrm 1.11 (TODO) we get ed + kN = 1. Thus ed - 1 = -kN is divisible by N,
+With Bezout's identity we get ed + kN = 1. Thus ed - 1 = -kN is divisible by N,
 therefore ed = 1 mod N. 
-
-d exists implies e coprime with N (we don't need this to show existence of d I think)
-Assume we have an inverse d for e mod N, such that de = 1 mod N. 
-Which means de - 1 = kN for some k.
-We can rewrite as de - kN = 1.
-We then know that there exists g = gcd(e, N) that divides de - kN: de = gf and kN = gh, so de - kN = gf - gh = g(f - h)
-de - kN = 1 and g divdies de - kN, therefore g divides 1, meaning that gcd(e,N) = 1
-
 
 Note that d is unique; otherwise would mean ed_1 = ed_2 = 1 mod N, which means that e(d_1 - d_2) = 0 mod N, since e is coprime to N, then we can divide by e and we see d_1 - d_2 = 0, so d_1 = d_2 and we end up with a unique d anyway)
 
