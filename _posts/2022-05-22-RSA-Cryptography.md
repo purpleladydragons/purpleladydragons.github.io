@@ -33,6 +33,19 @@ When we're compromising for practical speeds for the sender and recipient, we ne
 For a given rough value of N, the hardest to factor numbers are semiprime. Otherwise it has more factors which are necessarily smaller and possibly repeated.
 This makes factoring significantly easier, and many of the most efficient algorithms ultimately relate to the difficulty of finding the smallest prime factor.
 
+#### Some caveats to choosing N
+In practical details, there are some extra constraints around p and q because there are several tricks that make factoring N easier under certain conditions. [example](https://crypto.stackexchange.com/questions/13113/how-can-i-find-the-prime-numbers-used-in-rsa)
+
+How does Alice choose p and q though? For modern security, N needs to be at least 1024 bits. This means that p and q should be roughly 512 bits each (TODO why? this is just a basic binary arithmetic quesiton i think)
+But these numbers are still massive. It would take a *while* to generate and determine whether they're prime.
+NIST publishes prime numbers, so maybe we could use those. But this is still problematic. If you used a public and pre-generated list, 
+then suddenly the search space would be very small and it wouldn't be hard for an attacker to find p and q. 
+In reality, there does not exist such a list for 512 bit primes. Instead, there is an algorithm to generate large primes.
+[This stackexchange answer](https://crypto.stackexchange.com/questions/1970/how-are-primes-generated-for-rsa) does a great job of explaining. 
+Essentially, you are likely to find a candidate prime after less than 200 tries starting from a random 512 bit number. 
+So that's very quick, to generate one, but to generate all of them, you'd need to do it 2^512 times which is unbelievably huge.
+(If you protest that this number includes small primes like 3 and 5 technically, then you can fix the largest bit to 1 and check for the remaining 2^511 options)
+
 ### Using N to encrypt and decrypt messages
 
 Okay so we know how to choose a big N now. How do we actually use this information to encrypt and decrypt a message?
@@ -151,21 +164,6 @@ Therefore c^d is unique solution when gcd(e, (p-1)(q-1)) = 1
 
 So, p-1 and q-1 are both even numbers, and therefore e=3 satisfies the requirement. This actually gets used in practice!
 But sometimes a larger e is chosen for more security (TODO remind me of the other e choice = 65167 or whatever)
-
------
-
-Alice wants to create her public key.
-She does so by choosing two secret values p and q. p and q should be very large primes. In practical details, there are some extra constraints around p and q because there are several tricks that make factoring N easier under certain conditions. [example](https://crypto.stackexchange.com/questions/13113/how-can-i-find-the-prime-numbers-used-in-rsa)
-
-How does Alice choose p and q though? For modern security, N needs to be at least 1024 bits. This means that p and q should be roughly 512 bits each (TODO why? this is just a basic binary arithmetic quesiton i think)
-But these numbers are still massive. It would take a *while* to generate and determine whether they're prime.
-NIST publishes prime numbers, so maybe we could use those. But this is still problematic. If you used a public and pre-generated list, 
-then suddenly the search space would be very small and it wouldn't be hard for an attacker to find p and q. 
-In reality, there does not exist such a list for 512 bit primes. Instead, there is an algorithm to generate large primes.
-[This stackexchange answer](https://crypto.stackexchange.com/questions/1970/how-are-primes-generated-for-rsa) does a great job of explaining. 
-Essentially, you are likely to find a candidate prime after less than 200 tries starting from a random 512 bit number. 
-So that's very quick, to generate one, but to generate all of them, you'd need to do it 2^512 times which is unbelievably huge.
-(If you protest that this number includes small primes like 3 and 5 technically, then you can fix the largest bit to 1 and check for the remaining 2^511 options)
 
 ### Finding the decryption key d!
 TODO use Euclidean algorithm with knowledge of p and q to find d so that we can therefore decrypt m^e mod N
