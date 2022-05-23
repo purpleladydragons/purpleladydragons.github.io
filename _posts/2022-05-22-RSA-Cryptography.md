@@ -57,6 +57,13 @@ Bu thow do we actually go about finding such an e that it has an inverse d in mo
 We know by prop 1.13 (TODO) then that gcd(e, (p-1)(q-1)) = 1
 So boom, we now choose e such that gcd(e, (p-1)(q-1)) = 1
 
+TODO euler's formula / theorem
+formula describes function phi(n) = how many numbers up to n are coprime with n?
+in the special case where n is prime, we can use FLT to show that phi(n) = n-1
+but otherwise we have two options:
+1) use the citations 4 and 5 to show that phi is multiplicative so that we can show phi(N) = (p-1)(q-1)
+2) develop Lagrange's theorem and group theory to show that phi(n) is the order of the multiplicative group of integers mod n
+
 
 
 Alice wants to create her public key.
