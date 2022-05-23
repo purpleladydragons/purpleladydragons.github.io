@@ -33,15 +33,21 @@ When we're compromising for practical speeds for the sender and recipient, we ne
 For a given rough value of N, the hardest to factor numbers are semiprime. Otherwise it has more factors which are necessarily smaller and possibly repeated.
 This makes factoring significantly easier, and many of the most efficient algorithms ultimately relate to the difficulty of finding the smallest prime factor.
 
+So ultimately we have to choose two distinct (and large) primes p and q, then N=pq.
+
 #### Some caveats to choosing N
 In practical details, there are some extra constraints around p and q because there are several tricks that make factoring N easier under certain conditions. [example](https://crypto.stackexchange.com/questions/13113/how-can-i-find-the-prime-numbers-used-in-rsa)
 
-How does Alice choose p and q though? For modern security, N needs to be at least 1024 bits. This means that p and q should be roughly 512 bits each (TODO why? this is just a basic binary arithmetic quesiton i think)
+How does one choose p and q though? For modern security, N needs to be at least 1024 bits. This means that p and q should be roughly 512 bits each (TODO why? this is just a basic binary arithmetic quesiton i think)
+
 But these numbers are still massive. It would take a *while* to generate and determine whether they're prime.
+
 NIST publishes prime numbers, so maybe we could use those. But this is still problematic. If you used a public and pre-generated list, 
 then suddenly the search space would be very small and it wouldn't be hard for an attacker to find p and q. 
+
 In reality, there does not exist such a list for 512 bit primes. Instead, there is an algorithm to generate large primes.
-[This stackexchange answer](https://crypto.stackexchange.com/questions/1970/how-are-primes-generated-for-rsa) does a great job of explaining. 
+[This stackexchange answer](https://crypto.stackexchange.com/questions/1970/how-are-primes-generated-for-rsa) does a great job of explaining.
+
 Essentially, you are likely to find a candidate prime after less than 200 tries starting from a random 512 bit number. 
 So that's very quick, to generate one, but to generate all of them, you'd need to do it 2^512 times which is unbelievably huge.
 (If you protest that this number includes small primes like 3 and 5 technically, then you can fix the largest bit to 1 and check for the remaining 2^511 options)
@@ -72,6 +78,44 @@ such that c^d^e = m mod N, implying de = 1 mod N (in other words, d is the multi
 But does such a d even exist? Yes, if (and only if) e is coprime with N 
 
 Proof:
+First we prove Bezout's identity, a foundational result in number theory.
+
+Bezout's identity states that for two integers a and b with gcd(a,b) = d, then there exist integers x and y such that ax + by = d.
+We'll actually prove a slightly weaker version of the identity by assuming that a and b are positive.
+
+Given positive integers a and b, we construct the set S {ax + by | x,y s.t ax + by > 0}.
+
+S is non-empty since y=0, x=1 satisfies the set criterion for all positive a. S also has a minimum d because it is a set of positive integers.
+We want to show that d is also the gcd of a and b.
+
+To do so, we have to show that d divides a and b, and that for any other divisor c of a and b, c <= d.
+
+Show d divides a and b:
+
+We can write the division of a by d as a = nd + r.
+
+Rewritten: r = a - nd.
+Remember that d is an element of S, so we can rewrite d as ax + by for some x and y.
+Thus r = a - n(ax + by)
+= a - nax - nby
+= a(1 - nx) + (-ynb)
+So we've rewritten r in the form of ax + by. We also know r is non-negative because since d is minimum of S, then d <= a so we can always choose a non-negative r satisfying nd + r = a.
+
+But we also know r < d, because otherwise we rewrite a = nd + r as a = (n+1)d + (r-d).
+Since d is the minimum of S and is positive, then r has to be 0.
+
+Therefore d divides a. We can repeat the same arugment for b.
+
+To show that d is the greatest common divisor, we have to show that for any other c that divides a and b, c <= d.
+
+Assume c divides a and b. Then a = cx and b = cy.
+Then for d = ua + vb,
+d = u(cx) + v(cy)
+d = c(ux + vy)
+Therefore c divides d, so c <= d.
+
+Thus d is the gcd of a and b.
+
 (TODO first prove thrm 1.11 / Bezout's identity)
 
 assume gcd(e, N) = 1
