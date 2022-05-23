@@ -64,6 +64,7 @@ So to encrypt our message m, we will exponentiate it to somer power e, and then 
 
 This is by far the longest section. Now that we've specified N, we have to satisfy some properties when choosing e for everything to work. 
 I've tried to present this choice as naturally as possible while also proving the results we need to justify our choice.
+One thing that always irks me in mathematical texts is how theorems seem to just pop up out of nowhere. The relevance is rarely apparent at first and often looks like pulling a rabbit out of a hat when you need to. I've tried to limit that experience here, but there are still some foundational number theory results here that useful/needed that I think may appear jarring/convenient unless you were already familiar with them.
 
 We've said already that N should be a very large (1024 bits) semiprime number. But what should e be?
 To decrypt the ciphertext, we want to "undo" the encryption of our message m. m^e mod N = c means then that we want to find some decryption key d
