@@ -9,8 +9,8 @@ By "based on", I mean that the security of these systems are ultimately dependen
 (And technically, the systems are possibly weaker than these underlying problems since they publicize some extra information that makes the problems slightly different)
 
 So how does RSA work?
-First off, we've noted that it will ultimately use the difficult of integer factorization as its security measure.
-That means that for an eavesdropper to decrypt a private message, it should be (roughly) as hard as some number N.
+First off, we've noted that it will ultimately use the difficulty of integer factorization as its security measure.
+That means that for an eavesdropper to decrypt a private message, it should be (roughly) as hard as factoring some number N.
 Clearly, if we chose something trivial for N like 15, then an eavesdropper would very immediately be able to break our code.
 So how do we choose a good N? 
 Well, it should be big. Factoring a number grows (TODO) exponentionally in the number of bits of the number (TODO exponential over bits doesn't that just mean exp(log) which is linear?)
@@ -25,21 +25,33 @@ Okay so we know how to choose a big N now. How do we actually use this informati
 First off, realize that a message can be converted to ASCII / bits. Once you encode your message into bits, then that means it has a numerical value in base 10 as well.
 This value `m` represents our message, and is what we want to hide from eavesdroppers.
 
-Since we choose N, we know its two factors p and q. 
+A useful property of modular arithmetic is that exponentiation seems to generate random outputs. This is good for encryption! It means that if we put in two nearly identical messages, we get two totally different results. This means that someone monitoring all the encrypted messages, no matter to how many, should not be able to learn anything about the secret messages.
+It's generally held in consensus that the outputs are truly pseudorandom and not predictable. But there's no proof yet. 
 
-If we add another value, `e`, then we can achieve secure communication.
-This is where things start to get tricky in my opinion.
-We choose e such that gcd(e, (p-1)(q-1)) = 1.
-Why? I'll get to that in a minute. 
-But once we have this, we can publish N and e as our public key. 
-Then, someone else can send us a secure message! They take their message m, and they encrypt it by calculating c = m^e mod N.
-They send this value c over the wire, everyone else can see it too, but only we can read it!
-That's because ultimately, the fast algorithm to decrypt c back into m relies on knowing p and q. And only we know them!
+So to encrypt our message m, we will exponentiate it to somer power e, and then mod it by N: c = m^e mod N. 
+(TODO why do we use N as the modulus? because uhhh the decryption algorithm relates to the modulus and not to e)
 
-This all felt extremely unintuitive to me so let's break it into steps and I'll try to show/prove why they work. 
-As for how they came up with this, well that's a lot harder and part of the reason it was such a huge accomplishment!
-Probably, it started with knowing that modulo exponentiation is very unintuitive and basically random as far as we can tell. 
-If you pass two numbers x and x+1 through modulo exponentiation, you get very different results (TODO not in all cases right? only under certain circumstances?)
+Because modular exponentiation is random, this ciphertext should be totally undecipherable by a hostile listener.
+But how does the intended recipient know how to decrypt it?
+Well, it turns out there's an algorithm that allows for us to decrypt it so long as we know p and q.
+I will get to that algorithm in a moment, but first I want to focus on how we choose e, because we can't just choose any random number.
+
+To decrypt the ciphertext, we want to solve for x in c = x^e mod N. If we know p and q, this is feasible. 
+Essentially, we are looking to undo the encryption by inverting the exponentiation. So we are looking for some d such that c^d mod N = m. 
+The first quandry is that d might not exist if we're not careful when choosing e! (TODO like... it's not invertible at all? or you get multiple results or what? ah I suppose it *is* possible since you don't control c at all, and so we don't know if c is a primitive root. it's not guaranteed, so a random e might genuinely generate some value that can't be achieved by any other... hmmm no hold on...
+basically... uhhhh m^e mod N = c, and we want c^d mod N = m. You don't control c, so it's possible that there exists m such that *no* d works)
+(TODO we have to explain why d might not exist better)
+So how do we guarantee that d does exist for decryption purposes?
+
+We want there to exist d such that de = 1 mod N
+This means that N divides de - 1 (think about it; if de = 1 mod N then that means that dividing de by N yields a remainder of 1, so if you just subtract 1 from de, then the remainder will be 0, ie N divides de - 1)
+In other words, there exists k such that kN = de - 1. Then de - kN = 1. The clever part is noticing that that gcd(e, N) divides de - kN. 
+Proof: g = gcd(e, N), so therefore there exists f and h such that gf = e and hg = N. So then de - kN = dgf - khg = g(df - kh). So g clearly divides this value as well.
+But de - kN = 1. So that means that g has to divide 1 and that means g = 1. So then gcd(e, N) = 1.
+N = pq, so gcd(e, pq) = 1. 
+Okay so this is pretty useful for guiding us towards how to pick e. 
+Now how do we choose an e such that it's relatively prime to pq? hmm... but it's supposed to relprime to (p-1)(q-1)...
+
 
 Alice wants to create her public key.
 She does so by choosing two secret values p and q. p and q should be very large primes. In practical details, there are some extra constraints around p and q because there are several tricks that make factoring N easier under certain conditions. [example](https://crypto.stackexchange.com/questions/13113/how-can-i-find-the-prime-numbers-used-in-rsa)
