@@ -72,11 +72,51 @@ We're going to focus only on phi(n) for prime n. In which case, phi(n) = n-1 tri
 But we're focused on N=pq, so N is not prime.
 
 Luckily, phi(N) is multiplicative in this case meaning that phi(pq) = phi(p)phi(q).
-To show so we leverage the Chinese remainder theorem (TODO).
+To show so we leverage the Chinese remainder theorem:
+
+CRT Proof:
+We'll show a weak version of the CRT here instead of the fully generalized version. If we have two numbers m and n that are coprime (gcd(m,n) = 1),
+then the system x = a % m and x = b % n has a unique solution.
+
+Proof of existence:
+From the first congruence: x = my + a
+We can plug this into the second congruence to get my + a = b % n
+my = b - a % n
+Because gcd(m,n) = 1, we know that m has an inverse modulo n. Let's call it m'
+Then m'my = m'(b-a) % n 
+We can cancel m'm because we're showing congruence modulo n: y = m'(b-a) % n (TODO can we? idk why)
+Rewrite this as multiplication with remainder: y = zn + m'(b-a)
+Plug this back into the first equation x = my + a: x = m(zn + m'(b-a)) + a
+We can't reduce this further (because we're no longer working in modulo, so m' is not generally the inverse of m)
+But we've shown that the solution for x in this system has this form
+
+Proof of uniqueness:
+Assume x = c and x = c' both solve the system
+Then c is congruent to c' mod m, ie c = c' % m 
+So c = my + c', then c - c' = my
+So (c - c') is divisible by m
+We can repeat the same line of reasoning for n instead of m, so that (c - c') is divisible by n
+Because gcd(m,n) = 1 then this means that mn also divides (c - c')
+Which means c = c' % mn
+In other words, x = c and x = c' implies c is unique modulo mn
+
+This is important because it allows us to construct a bijection which shows that phi is multiplicative.
+Specifically, say we have distinct primes p and q, and say we have the sets A,B,C where A is the set of integers coprime to p, B is the set of integers coprime to q, and C is the set of integers coprime to pq. So |A| = phi(p), |B| = phi(q), and |C| = phi(pq)
+If we can demonstrate a bijection between AxB and C, then that means that phi is multiplicative and we know that phi(pq) = phi(p)phi(q)
+
+The set AxB is every pair (a,b) such that gcd(a,p) = 1 and gcd(b,q) = 1 where a < p and b < q.
+We take every pair (a,b) and run it through f(a,b): y = a % p and y = b % n.
+From the CRT, we know that each pair maps to exactly one solution. So we have a bijection from AxB to some set of integers D.
+
+But we can show that D = C: if d is a solution to f(a,b) then d must be ... TODO coprime? 
+Anyway the idea is that if d-something-p and d-something-q, then d-something-pq which means d is in C, which means D = C.
+So we now have a bijection from AxB to C which allows us to treat phi as a multiplicative function
+
+
 
 Now since p and q are both prime, we know phi(pq) = (p-1)(q-1).
 
-Now we can use thrm 3.1 (TODO) to show a^(p-1)(q-1) = 1 mod pq when a is coprime with pq.
+Now we can use thrm 3.1 (TODO, proof below but don't call it such lol) to show a^(p-1)(q-1) = 1 mod pq when a is coprime with pq.
 Proof:
 a^(p-1)(q-1) = (a^(p-1))^(q-1)
 By FLT, we get a^(p-1)^(q-1) = 1^(q-1) mod p
