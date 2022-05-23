@@ -73,6 +73,7 @@ I've tried to present this choice as naturally as possible while also proving th
 One thing that always irks me in mathematical texts is how theorems seem to just pop up out of nowhere. The relevance is rarely apparent at first and often looks like pulling a rabbit out of a hat when you need to. I've tried to limit that experience here, but there are still some foundational number theory results here that useful/needed that I think may appear jarring/convenient unless you were already familiar with them.
 
 We've said already that N should be a very large (1024 bits) semiprime number. But what should e be?
+
 To decrypt the ciphertext, we want to "undo" the encryption of our message m. m^e mod N = c means then that we want to find some decryption key d
 such that c^d^e = m mod N, implying de = 1 mod N (in other words, d is the multiplicative inverse of e modulo N)
 But does such a d even exist? Yes, if (and only if) e is coprime with N 
@@ -116,8 +117,7 @@ Therefore c divides d, so c <= d.
 
 Thus d is the gcd of a and b.
 
-(TODO first prove thrm 1.11 / Bezout's identity)
-
+Now with Bezout's identity, we can show the following:
 assume gcd(e, N) = 1
 With Bezout's identity we get ed + kN = 1. Thus ed - 1 = -kN is divisible by N,
 therefore ed = 1 mod N. 
