@@ -108,13 +108,10 @@ The set AxB is every pair (a,b) such that gcd(a,p) = 1 and gcd(b,q) = 1 where a 
 We take every pair (a,b) and run it through f(a,b): y = a % p and y = b % n.
 From the CRT, we know that each pair maps to exactly one solution. So we have a bijection from AxB to some set of integers D.
 
-But we can show that D = C: if d is a solution to f(a,b) then d must be ... TODO coprime? 
-Anyway the idea is that if d-something-p and d-something-q, then d-something-pq which means d is in C, which means D = C.
-So we now have a bijection from AxB to C which allows us to treat phi as a multiplicative function
+But we can show that D = C: if d is a solution to f(a,b) then that means d is coprime to both p and q. Since gcd(p,q) = 1 then d is also coprime to pq. 
+That's our definition of the set C! So that means D = C, so we now have a bijection from AxB to C which allows us to treat phi as a multiplicative function
 
-
-
-Now since p and q are both prime, we know phi(pq) = (p-1)(q-1).
+Since p and q are both prime, we know phi(pq) = (p-1)(q-1).
 
 Now we can use thrm 3.1 (TODO, proof below but don't call it such lol) to show a^(p-1)(q-1) = 1 mod pq when a is coprime with pq.
 Proof:
