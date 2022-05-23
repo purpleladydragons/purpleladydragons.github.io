@@ -42,8 +42,23 @@ The first quandry is that d might not exist if we're not careful when choosing e
 basically... uhhhh m^e mod N = c, and we want c^d mod N = m. You don't control c, so it's possible that there exists m such that *no* d works)
 (TODO we have to explain why d might not exist better)
 So how do we guarantee that d does exist for decryption purposes?
+(TODO ^^ maybe re-edit above para)
 
-We want there to exist d such that de = 1 mod N
+Okay so this is somewhere that I really struggled. You want to find inverse d to e (basically c^d^e mod N = c mod N, so that c^d is the original message). I would *assume* that means de = 1 mod N. But apparently not!
+
+ahh hmm okay...
+back to FLT
+per https://crypto.stackexchange.com/questions/25218/rsa-why-must-e-be-relative-prime-to-phin,
+RSA takes advantage of a^N-1 = 1 mod N (wait but also, how the fuck is it totient? phi(p) = p-1 when *p is prime* but N is not prime...)
+how does it do that again lol
+okay uhhhh euler's formula features... 
+okay but it's used to prove prop 3.4 which is the one that seems like it's fucking out of nowhere...
+ah okay FLT is super important because it basically means no info is leaked. we know the exponent e and the modulus N. so if m^e mod N *wasn't* always 1, then you'd be leaking info... that's why it's so important! tbh i'm not so sure if it's horrible if there exists some other exponent that has like =1 and=2 for half and half. i guess it still sucks and =1 for everything is pure randomness
+
+
+
+
+(TODO possible delete this para)
 This means that N divides de - 1 (think about it; if de = 1 mod N then that means that dividing de by N yields a remainder of 1, so if you just subtract 1 from de, then the remainder will be 0, ie N divides de - 1)
 In other words, there exists k such that kN = de - 1. Then de - kN = 1. The clever part is noticing that that gcd(e, N) divides de - kN. 
 Proof: g = gcd(e, N), so therefore there exists f and h such that gf = e and hg = N. So then de - kN = dgf - khg = g(df - kh). So g clearly divides this value as well.
