@@ -44,28 +44,19 @@ basically... uhhhh m^e mod N = c, and we want c^d mod N = m. You don't control c
 So how do we guarantee that d does exist for decryption purposes?
 (TODO ^^ maybe re-edit above para)
 
-Okay so this is somewhere that I really struggled. You want to find inverse d to e (basically c^d^e mod N = c mod N, so that c^d is the original message). I would *assume* that means de = 1 mod N. But apparently not!
+Okay so this is somewhere that I really struggled. You want to find inverse d to e (basically c^d^e mod N = c mod N, so that c^d is the original message). All the literature talks about how you want de = 1 mod (p-1)(q-1). But that's not what we have here at all (for now). We have de = 1 mod pq. But we can do some quick algebra to get to de = 1 mod (p-1)(q-1). 
+We have m = m^(ed) (basically decrypting an encrypted message with the right key will give us the original message. This is a crucial charateristic of our system. Without this, we wouldn't be able to decrypt the encrypted messages uniquely)
+From Euler's totient function (TODO even bother going into it?) we know m^phi(N) = 1 mod N
+If we take it to the kth power, then we have m^kphi = 1 mod N (b/c 1^k = 1)
+And then m^(kphi + 1) = m mod N (b/c 1m = m and m^x * m = m^(x+1))
+Then m^(kphi+1) = m^(ed)
+So ed = kphi + 1
+And this important! This is another way of saying that ed = 1 mod phi(N)
+phi(N) = (p-1)(q-1) so ed = 1 mod (p-1)(q-1)
+Bu thow do we actually go about finding such an e that it has an inverse d in modulus phi?
+We know by prop 1.13 (TODO) then that gcd(e, (p-1)(q-1)) = 1
+So boom, we now choose e such that gcd(e, (p-1)(q-1)) = 1
 
-ahh hmm okay...
-back to FLT
-per https://crypto.stackexchange.com/questions/25218/rsa-why-must-e-be-relative-prime-to-phin,
-RSA takes advantage of a^N-1 = 1 mod N (wait but also, how the fuck is it totient? phi(p) = p-1 when *p is prime* but N is not prime...)
-how does it do that again lol
-okay uhhhh euler's formula features... 
-okay but it's used to prove prop 3.4 which is the one that seems like it's fucking out of nowhere...
-ah okay FLT is super important because it basically means no info is leaked. we know the exponent e and the modulus N. so if m^e mod N *wasn't* always 1, then you'd be leaking info... that's why it's so important! tbh i'm not so sure if it's horrible if there exists some other exponent that has like =1 and=2 for half and half. i guess it still sucks and =1 for everything is pure randomness
-
-
-
-
-(TODO possible delete this para)
-This means that N divides de - 1 (think about it; if de = 1 mod N then that means that dividing de by N yields a remainder of 1, so if you just subtract 1 from de, then the remainder will be 0, ie N divides de - 1)
-In other words, there exists k such that kN = de - 1. Then de - kN = 1. The clever part is noticing that that gcd(e, N) divides de - kN. 
-Proof: g = gcd(e, N), so therefore there exists f and h such that gf = e and hg = N. So then de - kN = dgf - khg = g(df - kh). So g clearly divides this value as well.
-But de - kN = 1. So that means that g has to divide 1 and that means g = 1. So then gcd(e, N) = 1.
-N = pq, so gcd(e, pq) = 1. 
-Okay so this is pretty useful for guiding us towards how to pick e. 
-Now how do we choose an e such that it's relatively prime to pq? hmm... but it's supposed to relprime to (p-1)(q-1)...
 
 
 Alice wants to create her public key.
