@@ -42,23 +42,53 @@ So to encrypt our message m, we will exponentiate it to somer power e, and then 
 We've said already that N should be a very large (1024 bits) semiprime number. But what should e be?
 To decrypt the ciphertext, we want to "undo" the encryption of our message m. m^e mod N = c means then that we want to find some decryption key d
 such that c^d^e = m mod N, implying de = 1 mod N (in other words, d is the multiplicative inverse of e modulo N)
-But does such a d even exist? Yes, iff e is coprime with N (TODO proof).
+But does such a d even exist? Yes, iff e is coprime with N 
+
+Proof:
+assume gcd(e, N) = 1
+By thrm 1.11 (TODO) we get ed + kN = 1. Thus ed - 1 = -kN is divisible by N,
+therefore ed = 1 mod N. 
+
+d exists implies e coprime with N (we don't need this to show existence of d I think)
+Assume we have an inverse d for e mod N, such that de = 1 mod N. 
+Which means de - 1 = kN for some k.
+We can rewrite as de - kN = 1.
+We then know that there exists g = gcd(e, N) that divides de - kN: de = gf and kN = gh, so de - kN = gf - gh = g(f - h)
+de - kN = 1 and g divdies de - kN, therefore g divides 1, meaning that gcd(e,N) = 1
+
+
 Note that d is unique; otherwise would mean ed_1 = ed_2 = 1 mod N, which means that e(d_1 - d_2) = 0 mod N, since e is coprime to N, then we can divide by e and we see d_1 - d_2 = 0, so d_1 = d_2 and we end up with a unique d anyway)
+
 Great! But there's a further issue we need to address: we need to make sure the decryption is unique. 
 This means that given a cipher c, c^d = m should be unique. Otherwise the recipient wouldn't be able to decipher the text into a single message.
-(Note of course that just because d is unique doesn't mean c^d mod N has to be. For the trivial example, if d = N-1, then c^d = 1 mod N for all c)
+(Note of course that just because d is unique doesn't mean c^d mod N has to be. For the trivial example, if d = N-1 (with prime N), then c^d = 1 mod N for all c)
 
 So how do we guarantee that c^d is unique? We need to choose an e such that c^d has this property. And how do we do that?
 
-TODO develop Euler's formula and Euler's theorem
-formula describes function phi(n) = how many numbers up to n are coprime with n?
-in the special case where n is prime, we can use FLT to show that phi(n) = n-1
-but otherwise we have two options:
-1) use the citations 4 and 5 to show that phi is multiplicative so that we can show phi(N) = (p-1)(q-1)
-2) develop Lagrange's theorem and group theory to show that phi(n) is the order of the multiplicative group of integers mod n
+Let's first introduce Euler's formula.
+Euler's formula is a function phi defined as phi(n) = the number of positive integers less than n that are coprime to n.
+We're going to focus only on phi(n) for prime n. In which case, phi(n) = n-1 trivially because of the definition of n being prime: there are no numbers less than n that divide n. 
+
+But we're focused on N=pq, so N is not prime.
+
+Luckily, phi(N) is multiplicative in this case meaning that phi(pq) = phi(p)phi(q).
+To show so we leverage the Chinese remainder theorem (TODO).
+
+Now since p and q are both prime, we know phi(pq) = (p-1)(q-1).
+
+Now we can use thrm 3.1 (TODO) to show a^(p-1)(q-1) = 1 mod pq when a is coprime with pq.
+Proof:
+a^(p-1)(q-1) = (a^(p-1))^(q-1)
+By FLT, we get a^(p-1)^(q-1) = 1^(q-1) mod p
+= 1 mod p b/c 1 to anything = 1
+You can repeat same process with p and q flipped
+So then a^(p-1)(q-1) = 1 mod p and mod q implies a^(p-1)(q-1) - 1 is divisible by both p and q, which means it's divisible by pq as well
+therefore a^(p-1)(q-1) = 1 mod pq as well
+
+This was arguably a roundabout way to avoid some group theory. Instead of focusing specifically on phi for prime numbers, using CRT to demonstrate multiplicativity, and using FLT to establish modulo behavior, we could've shown, using Lagrange's theorem, that phi(n) is the order of multiplicative group of modulo n. (Good luck with that lol)
 
 Start with c^d^e = m = m^e^d mod N
-From Euler's theorem, we know m^phi(N) = 1 mod N
+From theorem above, we know m^phi(N) = 1 mod N (TODO remove the phi reference etc if you need to)
 Take them to the kth power, m^kphi = 1 mod N (because 1^k = 1)
 Multiply both sides by m, m^(kphi + 1) = m mod N
 m^(kphi + 1) = m^ed mod N
@@ -76,7 +106,7 @@ Because k(p-1)(q-1) + 1 = de, and since u = u^1 obviously, then we can get u = u
 Therefore c^d is unique solution when gcd(e, (p-1)(q-1)) = 1
 
 So, p-1 and q-1 are both even numbers, and therefore e=3 satisfies the requirement. This actually gets used in practice!
-But sometimes a larger e is chosen for more security.
+But sometimes a larger e is chosen for more security (TODO remind me of the other e choice = 65167 or whatever)
 
 -----
 
@@ -93,7 +123,12 @@ Essentially, you are likely to find a candidate prime after less than 200 tries 
 So that's very quick, to generate one, but to generate all of them, you'd need to do it 2^512 times which is unbelievably huge.
 (If you protest that this number includes small primes like 3 and 5 technically, then you can fix the largest bit to 1 and check for the remaining 2^511 options)
 
+### Finding the decryption key d!
+TODO use Euclidean algorithm with knowledge of p and q to find d so that we can therefore decrypt m^e mod N
+TODO also show why Eve can't do shit without p and q... (idk if the book actually covers this? i think it's literally an open problem)
 
+## Practical matters
+TODO start coding shit up
 
 
 
