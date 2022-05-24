@@ -299,7 +299,7 @@ Thus this list of numbers must be the same as 1 through n-1 (modulo n), albeit p
 
 Since these two lists contain the same numbers (modulo n) then we get:
 
-$$a \cdot 2a \cdot 3a \cdot ... \cdot (n-1)a \ \equiv \ 1 \cdot 2 \codt 3 \cdot ... \cdot (n-1) \pmod{n}$$
+$$a \cdot 2a \cdot 3a \cdot ... \cdot (n-1)a \ \equiv \ 1 \cdot 2 \cdot 3 \cdot ... \cdot (n-1) \pmod{n}$$
 
 We can reduce this:
 
@@ -363,7 +363,7 @@ Therefore $$c^d$$ is the unique solution when gcd(e, (p-1)(q-1)) = 1
 So, p-1 and q-1 are both even numbers, and therefore e=3 satisfies the requirement. This actually gets used in practice!
 But most often e=65537 is chosen for more security. 3 and 65537 are both "Fermat primes" meaning they're of the form $$2^k + 1$$. 
 This makes them particularly suitable for exponentiation in terms of computability because they can be reduced to the simpler operations of
-squaring and 1 multiplication ($$x^65537 = x^{2\cdot2\cdot2\cdot...\cdot2} \cdot x}).
+squaring and 1 multiplication ($$x^65537 = x^{2\cdot2\cdot2\cdot...\cdot2} \cdot x$$).
 
 This was a lot of work just to choose e=3. To recap, we needed to make sure that we could undo the original encryption.
 We decrypt the ciphertext c by raising it to the dth power: $$c^d \pmod{N} \ \equiv \ m$$
