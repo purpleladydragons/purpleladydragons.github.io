@@ -95,12 +95,21 @@ that I think may appear jarring/convenient unless you were already familiar with
 We've said already that N should be a very large (1024 bits) semiprime number. But what should e be?
 
 To decrypt the ciphertext, we want to "undo" the encryption of our message m. $$m^e \pmod{N} = c$$ means then that we want to find some decryption key d
-such that $$c^{d} = m^{e^d} \ \equiv \ m \pmod{N}$$, implying $$de \ \equiv \ 1 \pmod{N}$$ (in other words, d is the multiplicative inverse of e modulo N)
+such that $$c^{d} = m^{e^d} \ \equiv \ m \pmod{N}$$.
 
-But does such a d even exist? Yes, if (and only if) e is coprime with N 
+**Note: ** this does *not* imply that $$de \ \equiv \ 1 \pmod{N}$$
+
+This was a major confusion for me because by normal arithmetic rules, if you need to find d such that $$m^{de} = m$$, then clearly d is the inverse of e. 
+But it's not that simple in modular arithmetic.
+
+In fact, we need to find d such that $$de \ \equiv \ 1 \pmod{(p-1)(q-1)}$$
+
+Why? TODO https://crypto.stackexchange.com/questions/16482/rsa-fermats-little-theorem-and-the-multiplicative-inverse-relationship-between
+
+But does such a d even exist? Yes, if (and only if) e is coprime with (p-1)(q-1)
 
 ----
-### Proving e has an inverse d modulo N when e is coprime with N
+### Proving e has an inverse d modulo N when e is coprime with N, for a given e and N
 
 First we have to prove Bezout's identity, a foundational result in number theory.
 
