@@ -6,7 +6,6 @@ To do so, we have to use asymmetric key encryption. This is opposed to symmetric
 We have two major asymmetric systems: ElGamal and RSA. 
 ElGamal is based on Diffie-Hellman key exchange, which is based on discrete logarithms. 
 RSA is based on integer factorization. 
-(TODO explain what discrete logs are)
 
 By "based on", I mean that the security of these systems ultimately depend on how hard it is to solve these underlying problems. 
 (And technically, the systems are possibly weaker than these underlying problems since they make public some extra information that makes the problems slightly different)
@@ -73,6 +72,9 @@ This value `m` represents our message, and is what we want to hide from eavesdro
 
 A useful property of modular arithmetic is that exponentiation seems to generate random outputs. This is good for encryption! It means that if we put in two nearly identical messages, we get two totally different results. This means that someone monitoring all the encrypted messages, no matter how many, should not be able to learn anything about the secret messages.
 It's generally held in consensus that the outputs are truly pseudorandom and not predictable. But there's no proof yet. 
+
+![Output of exponentiation modulo N](../images/rsa-exp-mod-random.png)
+*Applying y=x^e mod N for several thousand x with e=3 and N=30402457*
 
 (TODO include graph of message values and their random cipher outputs on a x-y coordinate graph)
 
