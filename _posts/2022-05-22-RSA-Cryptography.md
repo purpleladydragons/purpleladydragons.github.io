@@ -254,9 +254,64 @@ That's our definition of the set C! So that means D = C, so we now have a biject
 
 Since p and q are both prime, we know $$\phi(pq) = (p-1)(q-1)$$.
 
-Now we can use Euler's theorem to show $$a^{(p-1)(q-1)} \ \equiv \ 1 \pmod{pq}$$ when a is coprime with pq.
+Now we introduce Euler's theorem to show $$a^{(p-1)(q-1)} \ \equiv \ 1 \pmod{pq}$$ when a is coprime with pq.
 
-Proof:
+----
+#### Euler's theorem and Fermat's little theorem
+
+Euler's theorem states that for any positive integer a, if a is coprime with n, then
+
+$$a^{\phi(n)} \ \equiv \ 1 \pmod{n}$$
+
+We only care about the special case when n=pq where p and q are both primes:
+
+$$a^{(p-1)(q-1)} \ \equiv \ 1 \pmod{pq}$$
+
+Before we can prove this, we want to state a more specific theorem, called Fermat's little theorem:
+
+If n is prime and a is coprime with n, then
+
+$$a^{n-1} \ \equiv \ 1 \pmod{n}$$
+
+Proof of Fermat's little theorem:
+Take integer a and prime n such that a and n are coprime
+Then we can enumerate n-1 numbers
+
+$$a, 2a, 3a, ..., (n-1)a \ \pmod{n}$$
+
+These numbers must all be distinct. To show why, let's assume they aren't.
+
+So we choose j and k such that $$ja \ \equiv \ ka \pmod{n}$$
+
+Thus $$ja - ka = a(j-k) \ \equiv \ 0 \pmod{n}$$
+
+So n divides a(j-k), which means n divides at least one of a and (j-k).
+
+By our initial assumption though, a is coprime with n so therefore n must divide (j-k)
+
+Since j and k are both less than n, this means the difference (j-k) between the two is also less than n.
+So the only value of (j-k) that n can divide when (j-k) is less than n is 0.
+
+Thus j-k = 0, j=k, and ja = ka. This contradicts our original assumption, so the numbers must all be distinct.
+
+So this means that we have n-1 *distinct* numbers, all greater than 0. 
+Thus this list of numbers must be the same as 1 through n-1 (modulo n), albeit possibly shuffled.
+
+Since these two lists contain the same numbers (modulo n) then we get:
+
+$$a \cdot 2a \cdot 3a \cdot ... \cdot (n-1)a \ \equiv \ 1 \cdot 2 \codt 3 \cdot ... \cdot (n-1) \pmod{n}$$
+
+We can reduce this:
+
+$$a^{(n-1)} \cdot (n-1)! \ \equiv \ (n-1)! \pmod{n}$$
+
+Since all the numbers 1 through n-1 are not divisible by n, then we can divide out the (n-1)! factor:
+
+$$a^{(n-1)} \ \equiv \ 1 \pmod{n}$$
+
+Thus we've proved Fermat's little theorem, and we can now prove Euler's more general theorem, specifically for n=pq when p and q are prime.
+
+Proof of Euler's theorem for n=pq:
 
 $$
 \begin{align}
