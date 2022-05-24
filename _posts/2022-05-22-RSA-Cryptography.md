@@ -97,7 +97,7 @@ We've said already that N should be a very large (1024 bits) semiprime number. B
 To decrypt the ciphertext, we want to "undo" the encryption of our message m. $$m^e \pmod{N} = c$$ means then that we want to find some decryption key d
 such that $$c^{d} = m^{e^d} \ \equiv \ m \pmod{N}$$.
 
-**Note: ** this does *not* imply that $$de \ \equiv \ 1 \pmod{N}$$
+**Note:** this does *not* imply that $$de \ \equiv \ 1 \pmod{N}$$
 
 This was a major confusion for me because by normal arithmetic rules, if you need to find d such that $$m^{de} = m$$, then clearly d is the inverse of e. 
 But it's not that simple in modular arithmetic.
