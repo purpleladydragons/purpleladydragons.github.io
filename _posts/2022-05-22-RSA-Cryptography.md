@@ -242,7 +242,7 @@ This is important because it allows us to construct a bijection which shows that
 
 Specifically, say we have distinct primes p and q, and say we have the sets A,B,C where A is the set of integers coprime to p, B is the set of integers coprime to q, and C is the set of integers coprime to pq. 
 
-So |A| = $$\phi(p)$$, |B| = $$\phi(q)$$, and |C| = $$\phi(pq)$$
+So \|A\| = $$\phi(p)$$, \|B\| = $$\phi(q)$$, and \|C\| = $$\phi(pq)$$
 
 If we can demonstrate a bijection between AxB and C, then that means that $$\phi$$ is multiplicative and we know that $$\phi(pq) = \phi(p)\phi(q)$$
 
