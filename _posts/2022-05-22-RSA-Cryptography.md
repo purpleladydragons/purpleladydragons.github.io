@@ -96,12 +96,12 @@ that I think may appear jarring/convenient unless you were already familiar with
 We've said already that N should be a very large (1024 bits) semiprime number. But what should e be?
 
 To decrypt the ciphertext, we want to "undo" the encryption of our message m. $$m^e \pmod{N} = c$$ means then that we want to find some decryption key d
-such that $$c^{d^e} \ \equiv \ m \pmod{N}$$, implying $$de \ \equiv \ 1 \pmod{N}$$ (in other words, d is the multiplicative inverse of e modulo N)
+such that $$c^{d} = m^{e^d} \ \equiv \ m \pmod{N}$$, implying $$de \ \equiv \ 1 \pmod{N}$$ (in other words, d is the multiplicative inverse of e modulo N)
 
 But does such a d even exist? Yes, if (and only if) e is coprime with N 
 
 ----
-### Proving e has an inverse modulo d when e is coprime with N
+### Proving e has an inverse d modulo N when e is coprime with N
 
 First we have to prove Bezout's identity, a foundational result in number theory.
 
@@ -178,7 +178,7 @@ So how do we guarantee that $$c^d$$ is unique? We need to choose an e such that 
 Let's first introduce Euler's formula.
 Euler's formula is a function $$\phi(n)$$ defined as 
 
-$$$$\phi(n) = \text{the number of positive integers less than n that are coprime to n}$$$$
+$$\phi(n) = \text{the number of positive integers less than n that are coprime to n}$$
 
 We're going to focus only on $$\phi(n)$$ for prime n. In which case, $$\phi(n) = n-1$$ trivially because of the definition of n being prime: there are no numbers less than n that divide n. 
 
@@ -277,7 +277,7 @@ This was arguably a roundabout way to avoid some group theory. Instead of doing 
 
 Okay. Now we are *finally* ready to describe e so that we can decipher $$m^e$$ using $$c^d$$ where $$ed \ \equiv \ 1 \pmod{N}$$
 
-Start with $$c^{d^e} = m \ \equiv \ m^{e^d} \pmod{N}$$
+Start with $$c^{d} = m \ \equiv \ m^{e^d} \pmod{N}$$
 
 From theorem above, we know $$m^{\phi(N)} \ \equiv \ 1 \pmod{N}$$ (TODO remove the phi reference etc if you need to)
 
