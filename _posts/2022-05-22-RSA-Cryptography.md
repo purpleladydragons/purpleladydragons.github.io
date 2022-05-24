@@ -3,8 +3,10 @@ We want to communicate securely across an insecure channel. We assume that we're
 
 To do so, we have to use asymmetric key encryption. This is opposed to symmetric key encryption, where both parties know and share the secret key. This means that each person has their own secret key. In practice, asymmetric key exchange is used to securely establish a shared secret key for further communication since symmetric encryption/decryption is faster than asymmetric (TODO explain why later)
 
-
-We have two major asymmetric systems: ElGamal and RSA. ElGamal is based on Diffie-Hellman key exchange, which is based on discrete logarithms. RSA is based on integer factorization. (TODO explain what discrete logs are)
+We have two major asymmetric systems: ElGamal and RSA. 
+ElGamal is based on Diffie-Hellman key exchange, which is based on discrete logarithms. 
+RSA is based on integer factorization. 
+(TODO explain what discrete logs are)
 
 By "based on", I mean that the security of these systems ultimately depend on how hard it is to solve these underlying problems. 
 (And technically, the systems are possibly weaker than these underlying problems since they make public some extra information that makes the problems slightly different)
@@ -20,10 +22,13 @@ Clearly, if we choose something trivial for N like 15, then an eavesdropper woul
 
 So how do we choose a good N? 
 
-Well, it should be big. Integer factorization is still an "unsolved" problem. We don't have any efficient algorithms for doing it, and they probably don't exist, but we don't know for sure (it basically boils down to P=NP). In general, for a number N that is b bits, we don't have any algorithms that run in polynomial time O(b^k). The best algorithms are sub-exponential. The [general number field sieve](https://en.wikipedia.org/wiki/General_number_field_sieve) is an example of the one of the most efficient algorithms.
-As an aside, Shor's algorithm provides a polynomial solution for factoring numbers, which means that quantum computers would/could render RSA obsolete as a secure system.
+Well, it should be big. Integer factorization is still an "unsolved" problem. 
+We don't have any efficient algorithms for doing it, and they probably don't exist, but we don't know for sure (it basically boils down to P=NP). 
 
-Why can't N be prime itself? (TODO show why it doesn't work in RSA)
+In general, for a number N that is b bits, we don't have any algorithms that run in polynomial time $O(b^k)$. 
+The best known algorithms are sub-exponential. 
+The [general number field sieve](https://en.wikipedia.org/wiki/General_number_field_sieve) is an example of the one of the most efficient algorithms.
+As an aside, Shor's algorithm provides a polynomial solution for factoring numbers, which means that quantum computers would/could render RSA obsolete as a secure system.
 
 The hardest numbers to factor are those that are "semiprime". 
 Semiprime means that a number is a product of two primes. 
@@ -35,20 +40,27 @@ This makes factoring significantly easier, and many of the most efficient algori
 
 So ultimately we have to choose two distinct (and large) primes p and q, then N=pq.
 
-#### Some caveats to choosing N
-In practical details, there are some extra constraints around p and q because there are several tricks that make factoring N easier under certain conditions. [example](https://crypto.stackexchange.com/questions/13113/how-can-i-find-the-prime-numbers-used-in-rsa)
+> **Why can't N itself be prime?**
+>
+> N cannot be prime for two reasons: we have to make N public and if N were prime, then anyone who knows N can easily decipher the message.
+> 
+> The reason that it's easy to decipher the message once you know N (if it's prime) is covered farther down in the section "Finding the decryption key d"
 
-How does one choose p and q though? For modern security, N needs to be at least 1024 bits. This means that p and q should be roughly 512 bits each (TODO why? this is just a basic binary arithmetic quesiton i think)
-
-But these numbers are still massive. It would take a *while* to generate and determine whether they're prime.
-
-NIST publishes prime numbers, so maybe we could use those. But this is still problematic. If you used a public and pre-generated list, 
+> **Some caveats to choosing N**
+>
+> In practical details, there are some extra constraints around p and q because there are several tricks that make factoring N easier under certain conditions. [Stack exchange provides an example.](https://crypto.stackexchange.com/questions/13113/how-can-i-find-the-prime-numbers-used-in-rsa)
+>
+> How does one choose p and q though? For modern security, N needs to be at least 1024 bits. This means that p and q should be roughly 512 bits each. 
+> 
+> But these numbers are still massive. It would take a *while* to generate and determine whether they're prime.
+> 
+> NIST publishes prime numbers, so maybe we could use those. But this is still problematic. If you used a public and pre-generated list, 
 then suddenly the search space would be very small and it wouldn't be hard for an attacker to find p and q. 
-
-In reality, there does not exist such a list for 512 bit primes. Instead, there is an algorithm to generate large primes.
+> 
+> In reality, there does not exist such a list for 512 bit primes. Instead, there is an algorithm to generate large primes.
 [This stackexchange answer](https://crypto.stackexchange.com/questions/1970/how-are-primes-generated-for-rsa) does a great job of explaining.
-
-Essentially, you are likely to find a candidate prime after less than 200 tries starting from a random 512 bit number. 
+> 
+> Essentially, you are likely to find a candidate prime after less than 200 tries starting from a random 512 bit number. 
 So that's very quick, to generate one, but to generate all of them, you'd need to do it 2^512 times which is unbelievably huge.
 (If you protest that this number includes small primes like 3 and 5 technically, then you can fix the largest bit to 1 and check for the remaining 2^511 options)
 
@@ -61,30 +73,36 @@ This value `m` represents our message, and is what we want to hide from eavesdro
 
 A useful property of modular arithmetic is that exponentiation seems to generate random outputs. This is good for encryption! It means that if we put in two nearly identical messages, we get two totally different results. This means that someone monitoring all the encrypted messages, no matter how many, should not be able to learn anything about the secret messages.
 It's generally held in consensus that the outputs are truly pseudorandom and not predictable. But there's no proof yet. 
+
 (TODO include graph of message values and their random cipher outputs on a x-y coordinate graph)
 
-So to encrypt our message m, we will exponentiate it to somer power e, and then mod it by N: c = m^e mod N. 
+So to encrypt our message m, we will exponentiate it to some power e, and then mod it by N: $c \ \equiv \ m^e \pmod{N}$. 
 (TODO why do we use N as the modulus? because uhhh the decryption algorithm relates to the modulus and not to e)
 
 ### Choosing e
 
 This is by far the longest section. Now that we've specified N, we have to satisfy some properties when choosing e for everything to work. 
 I've tried to present this choice as naturally as possible while also proving the results we need to justify our choice.
-One thing that always irks me in mathematical texts is how theorems seem to just pop up out of nowhere. The relevance is rarely apparent at first and often looks like pulling a rabbit out of a hat when you need to. I've tried to limit that experience here, but there are still some foundational number theory results here that useful/needed that I think may appear jarring/convenient unless you were already familiar with them.
+One thing that always irks me in mathematical texts is how theorems seem to just pop up out of nowhere. 
+The relevance is rarely apparent at first and often looks like pulling a rabbit out of a hat when you need to.
+I've tried to limit that experience here, 
+but there are still some foundational number theory results here that are useful/needed 
+that I think may appear jarring/convenient unless you were already familiar with them.
 
 We've said already that N should be a very large (1024 bits) semiprime number. But what should e be?
 
-To decrypt the ciphertext, we want to "undo" the encryption of our message m. m^e mod N = c means then that we want to find some decryption key d
-such that c^d^e = m mod N, implying de = 1 mod N (in other words, d is the multiplicative inverse of e modulo N)
+To decrypt the ciphertext, we want to "undo" the encryption of our message m. $m^e \pmod{N} = c$ means then that we want to find some decryption key d
+such that $c^{d^e} \ \equiv \ m \pmod{N}$, implying $de \ \equiv \ 1 \pmod{N}$ (in other words, d is the multiplicative inverse of e modulo N)
+
 But does such a d even exist? Yes, if (and only if) e is coprime with N 
 
 ----
-#### Proving ∃d such that ed ≣ 1 mod N
+### Proving e has an inverse modulo d when e is coprime with N
 
 First we have to prove Bezout's identity, a foundational result in number theory.
 
-```bezout
-Bezout's identity states that for two integers a and b with gcd(a,b) = d, then there exist integers x and y such that ax + by = d.
+Bezout's identity states that for two integers a and b with gcd(a,b) = d, 
+then there exist integers x and y such that ax + by = d.
 We'll actually prove a slightly weaker version of the identity by assuming that a and b are positive.
 
 Given positive integers a and b, we construct the set S {ax + by | x,y s.t ax + by > 0}.
@@ -94,16 +112,22 @@ We want to show that d is also the gcd of a and b.
 
 To do so, we have to show that d divides a and b, and that for any other divisor c of a and b, c <= d.
 
-Show d divides a and b:
+#### Show d divides a and b
 
 We can write the division of a by d as a = nd + r.
 
 Rewritten: r = a - nd.
+
 Remember that d is an element of S, so we can rewrite d as ax + by for some x and y.
+
 Thus r = a - n(ax + by)
+
 = a - nax - nby
+
 = a(1 - nx) + (-ynb)
-So we've rewritten r in the form of ax + by. We also know r is non-negative because since d is minimum of S, then d <= a so we can always choose a non-negative r satisfying nd + r = a.
+
+So we've rewritten r in the form of ax + by. 
+We also know r is non-negative because since d is minimum of S, then d <= a so we can always choose a non-negative r satisfying nd + r = a.
 
 But we also know r < d, because otherwise we rewrite a = nd + r as a = (n+1)d + (r-d).
 Since d is the minimum of S and is positive, then r has to be 0.
@@ -113,13 +137,15 @@ Therefore d divides a. We can repeat the same arugment for b.
 To show that d is the greatest common divisor, we have to show that for any other c that divides a and b, c <= d.
 
 Assume c divides a and b. Then a = cx and b = cy.
-Then for d = ua + vb,
+Then for d = ua + vb
+
 d = u(cx) + v(cy)
+
 d = c(ux + vy)
+
 Therefore c divides d, so c <= d.
 
 Thus d is the gcd of a and b.
-```
 
 Now with Bezout's identity, we can show that the inverse of e modulo N exists when e and N are coprime:
 
@@ -131,7 +157,11 @@ Thus $ed - 1 = -kN$
 
 Therefore $ed \ \equiv \ 1 \pmod{N}$
 
+So finally, we know that an inverse for e exists when e is coprime with N.
+
 ----
+
+### Making sure our ciphertext is decipherable
 
 Note that d is unique; otherwise would mean $ed_1 = ed_2 \ \equiv \ 1 \pmod{N}$, which means that $e(d_1 - d_2) \ \equiv \ 0 \pmod{N}$, since e is coprime to N, then we can divide by e and we see $d_1 - d_2 = 0$, so $d_1 = d_2$ and we end up with a unique d anyway)
 
@@ -249,9 +279,9 @@ Take them to the kth power, $m^{k\phi(N)} \ \equiv \ 1 \pmod{N}$ (because 1^k = 
 
 Multiply both sides by m, $m^{(k\phi(N) + 1)} \ \equiv \ m \pmod{N}$
 
-$m^{(k\phi{N} + 1)} = m^{ed} \pmod{N}$
+$m^{(k\phi(N) + 1)} = m^{ed} \pmod{N}$
 
-$k\phi{N} + 1 = ed$
+$k\phi(N) + 1 = ed$
 
 This is important! This basically is another way of saying $ed \ \equiv \ 1 \pmod{\phi(N)}$
 Since $\phi$ is multiplicative, $\phi(N) = \phi(p)\phi(q) = (p-1)(q-1)$
@@ -272,6 +302,15 @@ Therefore $c^d$ is the unique solution when gcd(e, (p-1)(q-1)) = 1
 
 So, p-1 and q-1 are both even numbers, and therefore e=3 satisfies the requirement. This actually gets used in practice!
 But sometimes a larger e is chosen for more security (TODO remind me of the other e choice = 65167 or whatever)
+
+This was a lot of work just to choose e=3. To recap, we needed to make sure that we could undo the original encryption.
+We decrypt the ciphertext c by raising it to the dth power: $c^d \pmod{N} \ \equiv \ m$
+But existence wasn't just enough. We also needed to make sure that decryption was unique. 
+Otherwise the recipient could end up with multiple possible interpretations.
+
+In order for $c^d$ to be unique modulo N, we had to choose e carefully. 
+We did a lot of legwork to show that $c^d$ uniquely decrypts the original message when
+e is coprime to (p-1)(q-1). 
 
 ### Finding the decryption key d!
 TODO use Euclidean algorithm with knowledge of p and q to find d so that we can therefore decrypt m^e mod N
