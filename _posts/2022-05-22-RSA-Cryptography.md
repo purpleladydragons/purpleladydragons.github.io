@@ -1,7 +1,7 @@
 ## Goal
 We want to communicate securely across an insecure channel. We assume that we're unable to share even a primary secret between two parties without an eavesdropper. So we have to send secure messages from the start.
 
-To do so, we have to use asymmetric key encryption. This is opposed to symmetric key encryption, where both parties know and share the secret key. This means that each person has their own secret key. In practice, asymmetric key exchange is used to securely establish a shared secret key for further communication since symmetric encryption/decryption is faster than asymmetric (TODO explain why later)
+To do so, we have to use asymmetric key encryption. This is opposed to symmetric key encryption, where both parties know and share the secret key. This means that each person has their own secret key. In practice, asymmetric key exchange is used to securely establish a shared secret key for further communication since symmetric encryption/decryption is faster than asymmetric. (This is basically because when both parties know the secret, they can use simpler operations than used by asymmetric encryption, ie they use xor whereas asymmetric uses power and modulus.)
 
 We have two major asymmetric systems: ElGamal and RSA. 
 ElGamal is based on Diffie-Hellman key exchange, which is based on discrete logarithms. 
@@ -81,7 +81,6 @@ It's generally held in consensus that the outputs are truly pseudorandom and not
 
 
 So to encrypt our message m, we will exponentiate it to some power e, and then mod it by N: $$c \ \equiv \ m^e \pmod{N}$$. 
-(TODO why do we use N as the modulus? because uhhh the decryption algorithm relates to the modulus and not to e)
 
 ### Choosing e
 
@@ -208,7 +207,7 @@ Because gcd(m,n) = 1, we know that m has an inverse modulo n. Let's call it m'
 
 Then $$m'my \ \equiv \ m'(b-a) \pmod{n}$$
 
-We can cancel m'm because we're showing congruence modulo n: $$y \ \equiv \ m'(b-a) \pmod{n}$$ (TODO can we? idk why)
+We can cancel m'm because we're showing congruence modulo n: $$y \ \equiv \ m'(b-a) \pmod{n}$$ 
 
 Rewrite this as multiplication with remainder: $$y = zn + m'(b-a)$$
 
@@ -279,7 +278,7 @@ Okay. Now we are *finally* ready to describe e so that we can decipher $$m^e$$ u
 
 Start with $$c^{d} = m \ \equiv \ m^{e^d} \pmod{N}$$
 
-From theorem above, we know $$m^{\phi(N)} \ \equiv \ 1 \pmod{N}$$ (TODO remove the phi reference etc if you need to)
+From theorem above, we know $$m^{\phi(N)} \ \equiv \ 1 \pmod{N}$$ 
 
 Take them to the kth power, $$m^{k\phi(N)} \ \equiv \ 1 \pmod{N}$$ (because 1^k = 1)
 
@@ -307,7 +306,9 @@ $$\equiv \ c^d \pmod{pq}$$ ; because $$u^e = c$$ and $$1^{-k} = 1$$
 Therefore $$c^d$$ is the unique solution when gcd(e, (p-1)(q-1)) = 1
 
 So, p-1 and q-1 are both even numbers, and therefore e=3 satisfies the requirement. This actually gets used in practice!
-But sometimes a larger e is chosen for more security (TODO remind me of the other e choice = 65167 or whatever)
+But most often e=65537 is chosen for more security. 3 and 65537 are both "Fermat primes" meaning they're of the form $$2^k + 1$$. 
+This makes them particularly suitable for exponentiation in terms of computability because they can be reduced to the simpler operations of
+squaring and 1 multiplication ($$x^65537 = x^{2\cdot2\cdot2\cdot...\cdot2} \cdot x}).
 
 This was a lot of work just to choose e=3. To recap, we needed to make sure that we could undo the original encryption.
 We decrypt the ciphertext c by raising it to the dth power: $$c^d \pmod{N} \ \equiv \ m$$
