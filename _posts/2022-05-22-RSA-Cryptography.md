@@ -240,7 +240,7 @@ In other words, x = c and x = c' implies c is unique modulo mn
 
 This is important because it allows us to construct a bijection which shows that $$\phi$$ is multiplicative.
 
-Specifically, say we have distinct primes p and q, and say we have the sets A,B,C where A is the set of integers coprime to p, B is the set of integers coprime to q, and C is the set of integers coprime to pq. So $$|A| = \phi(p)$$, $$|B| = \phi(q)$$, and $$|C| = \phi(pq)$$
+Specifically, say we have distinct primes p and q, and say we have the sets A,B,C where A is the set of integers coprime to p, B is the set of integers coprime to q, and C is the set of integers coprime to pq. So $$\abs{A} = \phi(p)$$, $$\abs{B} = \phi(q)$$, and $$\abs{C} = \phi(pq)$$
 
 If we can demonstrate a bijection between AxB and C, then that means that $$\phi$$ is multiplicative and we know that $$\phi(pq) = \phi(p)\phi(q)$$
 
