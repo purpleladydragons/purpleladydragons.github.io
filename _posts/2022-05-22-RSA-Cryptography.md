@@ -73,10 +73,12 @@ This value `m` represents our message, and is what we want to hide from eavesdro
 A useful property of modular arithmetic is that exponentiation seems to generate random outputs. This is good for encryption! It means that if we put in two nearly identical messages, we get two totally different results. This means that someone monitoring all the encrypted messages, no matter how many, should not be able to learn anything about the secret messages.
 It's generally held in consensus that the outputs are truly pseudorandom and not predictable. But there's no proof yet. 
 
-![Output of exponentiation modulo N](../images/rsa-exp-mod-random.png)
-*Applying y=x^e mod N for several thousand x with e=3 and N=30402457*
+<p align="center">
+<img src="https://raw.githubusercontent.com/purpleladydragons/purpleladydragons.github.io/master/images/rsa-cryptography/rsa-exp-mod-random.png" width="340"/>
+</p>
 
-(TODO include graph of message values and their random cipher outputs on a x-y coordinate graph)
+<p align="center"><i>Applying y=x^e mod N for several thousand x with e=3 and N=30402457</i></p>
+
 
 So to encrypt our message m, we will exponentiate it to some power e, and then mod it by N: $c \ \equiv \ m^e \pmod{N}$. 
 (TODO why do we use N as the modulus? because uhhh the decryption algorithm relates to the modulus and not to e)
