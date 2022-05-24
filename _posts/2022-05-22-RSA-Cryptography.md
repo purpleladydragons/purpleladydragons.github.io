@@ -24,7 +24,7 @@ So how do we choose a good N?
 Well, it should be big. Integer factorization is still an "unsolved" problem. 
 We don't have any efficient algorithms for doing it, and they probably don't exist, but we don't know for sure (it basically boils down to P=NP). 
 
-In general, for a number N that is b bits, we don't have any algorithms that run in polynomial time $O(b^k)$. 
+In general, for a number N that is b bits, we don't have any algorithms that run in polynomial time $$O(b^k)$$. 
 The best known algorithms are sub-exponential. 
 The [general number field sieve](https://en.wikipedia.org/wiki/General_number_field_sieve) is an example of the one of the most efficient algorithms.
 As an aside, Shor's algorithm provides a polynomial solution for factoring numbers, which means that quantum computers would/could render RSA obsolete as a secure system.
@@ -80,7 +80,7 @@ It's generally held in consensus that the outputs are truly pseudorandom and not
 <p align="center"><i>Applying y=x^e mod N for several thousand x with e=3 and N=30402457</i></p>
 
 
-So to encrypt our message m, we will exponentiate it to some power e, and then mod it by N: $c \ \equiv \ m^e \pmod{N}$. 
+So to encrypt our message m, we will exponentiate it to some power e, and then mod it by N: $$c \ \equiv \ m^e \pmod{N}$$. 
 (TODO why do we use N as the modulus? because uhhh the decryption algorithm relates to the modulus and not to e)
 
 ### Choosing e
@@ -95,8 +95,8 @@ that I think may appear jarring/convenient unless you were already familiar with
 
 We've said already that N should be a very large (1024 bits) semiprime number. But what should e be?
 
-To decrypt the ciphertext, we want to "undo" the encryption of our message m. $m^e \pmod{N} = c$ means then that we want to find some decryption key d
-such that $c^{d^e} \ \equiv \ m \pmod{N}$, implying $de \ \equiv \ 1 \pmod{N}$ (in other words, d is the multiplicative inverse of e modulo N)
+To decrypt the ciphertext, we want to "undo" the encryption of our message m. $$m^e \pmod{N} = c$$ means then that we want to find some decryption key d
+such that $$c^{d^e} \ \equiv \ m \pmod{N}$$, implying $$de \ \equiv \ 1 \pmod{N}$$ (in other words, d is the multiplicative inverse of e modulo N)
 
 But does such a d even exist? Yes, if (and only if) e is coprime with N 
 
@@ -153,13 +153,13 @@ Thus d is the gcd of a and b.
 
 Now with Bezout's identity, we can show that the inverse of e modulo N exists when e and N are coprime:
 
-assume $gcd(e, N) = 1$
+assume $$gcd(e, N) = 1$$
 
-By Bezout's identity, we have $ed + kN = 1$
+By Bezout's identity, we have $$ed + kN = 1$$
 
-Thus $ed - 1 = -kN$
+Thus $$ed - 1 = -kN$$
 
-Therefore $ed \ \equiv \ 1 \pmod{N}$
+Therefore $$ed \ \equiv \ 1 \pmod{N}$$
 
 So finally, we know that an inverse for e exists when e is coprime with N.
 
@@ -167,24 +167,24 @@ So finally, we know that an inverse for e exists when e is coprime with N.
 
 ### Making sure our ciphertext is decipherable
 
-Note that d is unique; otherwise would mean $ed_1 = ed_2 \ \equiv \ 1 \pmod{N}$, which means that $e(d_1 - d_2) \ \equiv \ 0 \pmod{N}$, since e is coprime to N, then we can divide by e and we see $d_1 - d_2 = 0$, so $d_1 = d_2$ and we end up with a unique d anyway)
+Note that d is unique; otherwise would mean $$ed_1 = ed_2 \ \equiv \ 1 \pmod{N}$$, which means that $$e(d_1 - d_2) \ \equiv \ 0 \pmod{N}$$, since e is coprime to N, then we can divide by e and we see $$d_1 - d_2 = 0$$, so $$d_1 = d_2$$ and we end up with a unique d anyway)
 
 Great! But there's a further issue we need to address: we need to make sure the decryption is unique. 
-This means that given a cipher c, $c^d = m$ should be unique. Otherwise the recipient wouldn't be able to decipher the text into a single message.
-(Note of course that just because d is unique doesn't mean $c^d \pmod{N}$ has to be. For the trivial example, if d = N-1 (with prime N), then $c^d \ \equiv \ 1 \pmod{N}$ for all c)
+This means that given a cipher c, $$c^d = m$$ should be unique. Otherwise the recipient wouldn't be able to decipher the text into a single message.
+(Note of course that just because d is unique doesn't mean $$c^d \pmod{N}$$ has to be. For the trivial example, if d = N-1 (with prime N), then $$c^d \ \equiv \ 1 \pmod{N}$$ for all c)
 
-So how do we guarantee that $c^d$ is unique? We need to choose an e such that $c^d$ has this property. And how do we do that?
+So how do we guarantee that $$c^d$$ is unique? We need to choose an e such that $$c^d$$ has this property. And how do we do that?
 
 Let's first introduce Euler's formula.
-Euler's formula is a function $\phi(n)$ defined as 
+Euler's formula is a function $$\phi(n)$$ defined as 
 
-$$\phi(n) = \text{the number of positive integers less than n that are coprime to n}$$
+$$$$\phi(n) = \text{the number of positive integers less than n that are coprime to n}$$$$
 
-We're going to focus only on $\phi(n)$ for prime n. In which case, $\phi(n) = n-1$ trivially because of the definition of n being prime: there are no numbers less than n that divide n. 
+We're going to focus only on $$\phi(n)$$ for prime n. In which case, $$\phi(n) = n-1$$ trivially because of the definition of n being prime: there are no numbers less than n that divide n. 
 
-But we're focused on N=pq, and N is not prime, so what can we do with our knowledge of $\phi$?
+But we're focused on N=pq, and N is not prime, so what can we do with our knowledge of $$\phi$$?
 
-Luckily, $\phi(N)$ is multiplicative in this case meaning that $\phi(pq) = \phi(p)\phi(q)$.
+Luckily, $$\phi(N)$$ is multiplicative in this case meaning that $$\phi(pq) = \phi(p)\phi(q)$$.
 To show so we leverage the so-called Chinese remainder theorem.
 
 ----
@@ -194,25 +194,25 @@ To show so we leverage the so-called Chinese remainder theorem.
 The Chinese remainder theorem is another foundational result in number theory. The original problem dates back to the 4th century!
 
 We'll show a weak version of the CRT here instead of the fully generalized version: If we have two numbers m and n that are coprime (gcd(m,n) = 1),
-then the system $x \ \equiv \ a \pmod{m}$ and $x \ \equiv \ b \pmod{n}$ has a unique solution.
+then the system $$x \ \equiv \ a \pmod{m}$$ and $$x \ \equiv \ b \pmod{n}$$ has a unique solution.
 
 First we prove that a solution always exists.
 
-From the first congruence: $x = my + a$
+From the first congruence: $$x = my + a$$
 
-We can plug this into the second congruence to get $my + a \ \equiv \ b \pmod{n}$
+We can plug this into the second congruence to get $$my + a \ \equiv \ b \pmod{n}$$
 
-Thus $my \ \equiv \ b - a \pmod{n}$
+Thus $$my \ \equiv \ b - a \pmod{n}$$
 
 Because gcd(m,n) = 1, we know that m has an inverse modulo n. Let's call it m'
 
-Then $m'my \ \equiv \ m'(b-a) \pmod{n}$
+Then $$m'my \ \equiv \ m'(b-a) \pmod{n}$$
 
-We can cancel m'm because we're showing congruence modulo n: $y \ \equiv \ m'(b-a) \pmod{n}$ (TODO can we? idk why)
+We can cancel m'm because we're showing congruence modulo n: $$y \ \equiv \ m'(b-a) \pmod{n}$$ (TODO can we? idk why)
 
-Rewrite this as multiplication with remainder: $y = zn + m'(b-a)$
+Rewrite this as multiplication with remainder: $$y = zn + m'(b-a)$$
 
-Plug this back into the first equation $x = my + a$: $x = m(zn + m'(b-a)) + a$
+Plug this back into the first equation $$x = my + a$$: $$x = m(zn + m'(b-a)) + a$$
 
 We can't reduce this further (because we're no longer working in modulo, so m' is not generally the inverse of m)
 
@@ -220,11 +220,11 @@ But we've shown that the solution for x in this system has this form
 
 Now we prove that the solution is unique.
 
-Assume $x = c$ and $x = c'$ both solve the system
+Assume $$x = c$$ and $$x = c'$$ both solve the system
 
-Then c is congruent to c' mod m, ie $c \ \equiv \ c' \pmod{m}$
+Then c is congruent to c' mod m, ie $$c \ \equiv \ c' \pmod{m}$$
 
-So $c = my + c'$, then $c - c' = my$
+So $$c = my + c'$$, then $$c - c' = my$$
 
 So (c - c') is divisible by m
 
@@ -232,88 +232,88 @@ We can repeat the same line of reasoning for n instead of m, so that (c - c') is
 
 Because gcd(m,n) = 1 then this means that mn also divides (c - c')
 
-Which means $c \ \equiv \ c' \pmod{mn}$
+Which means $$c \ \equiv \ c' \pmod{mn}$$
 
 In other words, x = c and x = c' implies c is unique modulo mn
 
 ----
 
-This is important because it allows us to construct a bijection which shows that $\phi$ is multiplicative.
+This is important because it allows us to construct a bijection which shows that $$\phi$$ is multiplicative.
 
-Specifically, say we have distinct primes p and q, and say we have the sets A,B,C where A is the set of integers coprime to p, B is the set of integers coprime to q, and C is the set of integers coprime to pq. So $|A| = \phi(p)$, $|B| = \phi(q)$, and $|C| = \phi(pq)$
+Specifically, say we have distinct primes p and q, and say we have the sets A,B,C where A is the set of integers coprime to p, B is the set of integers coprime to q, and C is the set of integers coprime to pq. So $$|A| = \phi(p)$$, $$|B| = \phi(q)$$, and $$|C| = \phi(pq)$$
 
-If we can demonstrate a bijection between AxB and C, then that means that $\phi$ is multiplicative and we know that $\phi(pq) = \phi(p)\phi(q)$
+If we can demonstrate a bijection between AxB and C, then that means that $$\phi$$ is multiplicative and we know that $$\phi(pq) = \phi(p)\phi(q)$$
 
 The set AxB is every pair (a,b) such that gcd(a,p) = 1 and gcd(b,q) = 1 where a < p and b < q.
-We take every pair (a,b) and run it through f(a,b): $y \ \equiv \ a \pmod{p}$ and $y \ \equiv \ b \pmod{n}$.
+We take every pair (a,b) and run it through f(a,b): $$y \ \equiv \ a \pmod{p}$$ and $$y \ \equiv \ b \pmod{n}$$.
 From the CRT, we know that each pair maps to exactly one solution. So we have a bijection from AxB to some set of integers D.
 
 But we can show that D = C: if d is a solution to f(a,b) then that means d is coprime to both p and q. Since gcd(p,q) = 1 then d is also coprime to pq. 
-That's our definition of the set C! So that means D = C, so we now have a bijection from AxB to C which allows us to treat $\phi$ as a multiplicative function.
+That's our definition of the set C! So that means D = C, so we now have a bijection from AxB to C which allows us to treat $$\phi$$ as a multiplicative function.
 
-Since p and q are both prime, we know $\phi(pq) = (p-1)(q-1)$.
+Since p and q are both prime, we know $$\phi(pq) = (p-1)(q-1)$$.
 
-Now we can use Euler's theorem to show $a^{(p-1)(q-1)} \ \equiv \ 1 \pmod{pq}$ when a is coprime with pq.
+Now we can use Euler's theorem to show $$a^{(p-1)(q-1)} \ \equiv \ 1 \pmod{pq}$$ when a is coprime with pq.
 
 Proof:
 
-$$
+$$$$
 \begin{align}
 & a^{(p-1)(q-1)} = (a^{(p-1)})^{(q-1)} \\ 
 & (a^{(p-1)})^{(q-1)} \ \equiv \ 1^{(q-1)} \pmod{p} \text{(because of FLT)} \\
 & \equiv \ 1 \pmod{p} \text{ (because 1 to anything = 1)} \\
 \end{align}
-$$
+$$$$
 
 You can repeat same process with p and q flipped
 
-So then $a^{(p-1)(q-1)} \ \equiv \ 1 \pmod{p}$ and $a^{(p-1)(q-1)} \ \equiv \ 1 \pmod{q}$ implies $a^{(p-1)(q-1)} - 1$ is divisible by both p and q, which means it's divisible by pq as well
+So then $$a^{(p-1)(q-1)} \ \equiv \ 1 \pmod{p}$$ and $$a^{(p-1)(q-1)} \ \equiv \ 1 \pmod{q}$$ implies $$a^{(p-1)(q-1)} - 1$$ is divisible by both p and q, which means it's divisible by pq as well
 
-Therefore $a^{(p-1)(q-1)} \ \equiv \ 1 \pmod{pq}$ as well
+Therefore $$a^{(p-1)(q-1)} \ \equiv \ 1 \pmod{pq}$$ as well
 
-This was arguably a roundabout way to avoid some group theory. Instead of doing what we did: focusing specifically on $\phi$ for only prime numbers, using CRT to demonstrate multiplicativity of $\phi$, and using Euler's theorem to establish modulo behavior, we could've shown, using Lagrange's theorem, that $\phi(n)$ is the order of multiplicative group of modulo n. (Good luck with that lol)
+This was arguably a roundabout way to avoid some group theory. Instead of doing what we did: focusing specifically on $$\phi$$ for only prime numbers, using CRT to demonstrate multiplicativity of $$\phi$$, and using Euler's theorem to establish modulo behavior, we could've shown, using Lagrange's theorem, that $$\phi(n)$$ is the order of multiplicative group of modulo n. (Good luck with that lol)
 
-Okay. Now we are *finally* ready to describe e so that we can decipher $m^e$ using $c^d$ where $ed \ \equiv \ 1 \pmod{N}$
+Okay. Now we are *finally* ready to describe e so that we can decipher $$m^e$$ using $$c^d$$ where $$ed \ \equiv \ 1 \pmod{N}$$
 
-Start with $c^{d^e} = m \ \equiv \ m^{e^d} \pmod{N}$
+Start with $$c^{d^e} = m \ \equiv \ m^{e^d} \pmod{N}$$
 
-From theorem above, we know $m^{\phi(N)} \ \equiv \ 1 \pmod{N}$ (TODO remove the phi reference etc if you need to)
+From theorem above, we know $$m^{\phi(N)} \ \equiv \ 1 \pmod{N}$$ (TODO remove the phi reference etc if you need to)
 
-Take them to the kth power, $m^{k\phi(N)} \ \equiv \ 1 \pmod{N}$ (because 1^k = 1)
+Take them to the kth power, $$m^{k\phi(N)} \ \equiv \ 1 \pmod{N}$$ (because 1^k = 1)
 
-Multiply both sides by m, $m^{(k\phi(N) + 1)} \ \equiv \ m \pmod{N}$
+Multiply both sides by m, $$m^{(k\phi(N) + 1)} \ \equiv \ m \pmod{N}$$
 
-$m^{(k\phi(N) + 1)} = m^{ed} \pmod{N}$
+$$m^{(k\phi(N) + 1)} = m^{ed} \pmod{N}$$
 
-$k\phi(N) + 1 = ed$
+$$k\phi(N) + 1 = ed$$
 
-This is important! This basically is another way of saying $ed \ \equiv \ 1 \pmod{\phi(N)}$
-Since $\phi$ is multiplicative, $\phi(N) = \phi(p)\phi(q) = (p-1)(q-1)$
-So $ed = 1 \pmod{(p-1)(q-1)}$
+This is important! This basically is another way of saying $$ed \ \equiv \ 1 \pmod{\phi(N)}$$
+Since $$\phi$$ is multiplicative, $$\phi(N) = \phi(p)\phi(q) = (p-1)(q-1)$$
+So $$ed = 1 \pmod{(p-1)(q-1)}$$
 And therefore we know then that gcd(e, (p-1)(q-1)) = 1
 
-So going back again, assume m = u is a solution to $m^e = c \pmod{N}$.
+So going back again, assume m = u is a solution to $$m^e = c \pmod{N}$$.
 
-Because $k(p-1)(q-1) + 1 = de$, and since $u = u^1$ obviously, then we can get $u = u^{de - k(p-1)(q-1)}$
+Because $$k(p-1)(q-1) + 1 = de$$, and since $$u = u^1$$ obviously, then we can get $$u = u^{de - k(p-1)(q-1)}$$
 
-$\equiv \ u^{ed} \cdot u^{((p-1)(q-1))^{-k}} \pmod{pq}$
+$$\equiv \ u^{ed} \cdot u^{((p-1)(q-1))^{-k}} \pmod{pq}$$
 
-$\equiv \ u^{ed} \cdot 1^{-k} \pmod{pq}$ ; because of Euler's theorem 
+$$\equiv \ u^{ed} \cdot 1^{-k} \pmod{pq}$$ ; because of Euler's theorem 
 
-$\equiv \ c^d \pmod{pq}$ ; because $u^e = c$ and $1^{-k} = 1$
+$$\equiv \ c^d \pmod{pq}$$ ; because $$u^e = c$$ and $$1^{-k} = 1$$
 
-Therefore $c^d$ is the unique solution when gcd(e, (p-1)(q-1)) = 1
+Therefore $$c^d$$ is the unique solution when gcd(e, (p-1)(q-1)) = 1
 
 So, p-1 and q-1 are both even numbers, and therefore e=3 satisfies the requirement. This actually gets used in practice!
 But sometimes a larger e is chosen for more security (TODO remind me of the other e choice = 65167 or whatever)
 
 This was a lot of work just to choose e=3. To recap, we needed to make sure that we could undo the original encryption.
-We decrypt the ciphertext c by raising it to the dth power: $c^d \pmod{N} \ \equiv \ m$
+We decrypt the ciphertext c by raising it to the dth power: $$c^d \pmod{N} \ \equiv \ m$$
 But existence wasn't just enough. We also needed to make sure that decryption was unique. 
 Otherwise the recipient could end up with multiple possible interpretations.
 
-In order for $c^d$ to be unique modulo N, we had to choose e carefully. 
-We did a lot of legwork to show that $c^d$ uniquely decrypts the original message when
+In order for $$c^d$$ to be unique modulo N, we had to choose e carefully. 
+We did a lot of legwork to show that $$c^d$$ uniquely decrypts the original message when
 e is coprime to (p-1)(q-1). 
 
 ### Finding the decryption key d!
@@ -322,7 +322,3 @@ TODO also show why Eve can't do shit without p and q... (idk if the book actuall
 
 ## Practical matters
 TODO start coding shit up
-
-
-
-
