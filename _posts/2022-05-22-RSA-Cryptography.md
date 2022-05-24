@@ -259,13 +259,13 @@ Now we can use Euler's theorem to show $$a^{(p-1)(q-1)} \ \equiv \ 1 \pmod{pq}$$
 
 Proof:
 
-$$$$
+$$
 \begin{align}
 & a^{(p-1)(q-1)} = (a^{(p-1)})^{(q-1)} \\ 
 & (a^{(p-1)})^{(q-1)} \ \equiv \ 1^{(q-1)} \pmod{p} \text{(because of FLT)} \\
 & \equiv \ 1 \pmod{p} \text{ (because 1 to anything = 1)} \\
 \end{align}
-$$$$
+$$
 
 You can repeat same process with p and q flipped
 
