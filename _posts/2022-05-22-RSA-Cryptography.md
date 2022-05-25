@@ -99,17 +99,93 @@ such that $$c^{d} = m^{e^d} \ \equiv \ m \pmod{N}$$.
 
 **Note:** this does *not* imply that $$de \ \equiv \ 1 \pmod{N}$$
 
-This was a major confusion for me because by normal arithmetic rules, if you need to find d such that $$m^{de} = m$$, then clearly d is the inverse of e. 
+This was a major confusion for me because by normal arithmetic rules, if you need to find d such that $$m^{de} = m$$, then clearly d is the multiplicative inverse of e. 
 But it's not that simple in modular arithmetic.
 
-In fact, we need to find d such that $$de \ \equiv \ 1 \pmod{(p-1)(q-1)}$$
+In fact, we need to find d such that $$de \ \equiv \ 1 \pmod{(p-1)(q-1)}$$ (note the different modulus)
 
-Why? TODO https://crypto.stackexchange.com/questions/16482/rsa-fermats-little-theorem-and-the-multiplicative-inverse-relationship-between
+I personally found this to be totally jarring and poorly explained when I encountered it. Fortunately [this stackexchange answer](https://crypto.stackexchange.com/questions/16482/rsa-fermats-little-theorem-and-the-multiplicative-inverse-relationship-between) does a fantastic job of explaining why. Before you read that answer though, it's helpful to know about Fermat's little theorem and Euler's theorem.
 
-But does such a d even exist? Yes, if (and only if) e is coprime with (p-1)(q-1)
+### Fermat's little theorem and Euler's theorem
+
+Fermat's little theorem stats that if n is prime and a is coprime with n, then
+
+$$a^{n-1} \ \equiv \ 1 \pmod{n}$$
+
+Proof of Fermat's little theorem:
+Take integer a and prime n such that a and n are coprime
+Then we can enumerate n-1 numbers
+
+$$a, 2a, 3a, ..., (n-1)a \ \pmod{n}$$
+
+These numbers must all be distinct. To show why, let's assume they aren't.
+
+So we choose j and k such that $$ja \ \equiv \ ka \pmod{n}$$
+
+Thus $$ja - ka = a(j-k) \ \equiv \ 0 \pmod{n}$$
+
+So n divides a(j-k), which means n divides at least one of a and (j-k).
+
+By our initial assumption though, a is coprime with n so therefore n must divide (j-k)
+
+Since j and k are both less than n, this means the difference (j-k) between the two is also less than n.
+So the only value of (j-k) that n can divide when (j-k) is less than n is 0.
+
+Thus j-k = 0, j=k, and ja = ka. This contradicts our original assumption, so the numbers must all be distinct.
+
+So this means that we have n-1 *distinct* numbers, all greater than 0. 
+Thus this list of numbers must be the same as 1 through n-1 (modulo n), albeit possibly shuffled.
+
+Since these two lists contain the same numbers (modulo n) then we get:
+
+$$a \cdot 2a \cdot 3a \cdot ... \cdot (n-1)a \ \equiv \ 1 \cdot 2 \cdot 3 \cdot ... \cdot (n-1) \pmod{n}$$
+
+We can reduce this:
+
+$$a^{(n-1)} \cdot (n-1)! \ \equiv \ (n-1)! \pmod{n}$$
+
+Since all the numbers 1 through n-1 are not divisible by n, then we can divide out the (n-1)! factor:
+
+$$a^{(n-1)} \ \equiv \ 1 \pmod{n}$$
+
+Thus we've proved Fermat's little theorem.
+
+Euler's theorem generalizes Fermat's little theorem and states that for any positive integer a, if a is coprime with n, then
+
+$$a^{\phi(n)} \ \equiv \ 1 \pmod{n}$$
+
+We only care about the special case when n=pq where p and q are both primes:
+
+$$a^{(p-1)(q-1)} \ \equiv \ 1 \pmod{pq}$$
+
+But what is $$\phi(n)$$? It's too early to introduce it here fully, but it's a function that returns the number of integers less than n that are coprime with n. We'll describe it in more detail later, but for now we only care the specific case when n=pq where p and q are distinct primes. In this case $$\phi(pq) = (p-1)(q-1)$$ (if you're too bothered by this, you can skip ahead to the "Chinese remainder theorem" (TODO or another?) section)
+
+Proof of Euler's theorem for n=pq:
+
+$$
+\begin{align}
+& a^{(p-1)(q-1)} = (a^{(p-1)})^{(q-1)} \\ 
+& (a^{(p-1)})^{(q-1)} \ \equiv \ 1^{(q-1)} \pmod{p} \text{(because of FLT)} \\
+& \equiv \ 1 \pmod{p} \text{ (because 1 to anything = 1)} \\
+\end{align}
+$$
+
+You can repeat same process with p and q flipped
+
+So then $$a^{(p-1)(q-1)} \ \equiv \ 1 \pmod{p}$$ and $$a^{(p-1)(q-1)} \ \equiv \ 1 \pmod{q}$$ implies $$a^{(p-1)(q-1)} - 1$$ is divisible by both p and q, which means it's divisible by pq as well
+
+Therefore $$a^{(p-1)(q-1)} \ \equiv \ 1 \pmod{pq}$$ as well
+
+---
+
+Okay so with all that out of the way, we now know we want to find d such that $$de \ \equiv \ 1 \pmod{(p-1)(q-1)}$$
+
+But does such a d even exist? Yes, if (and only if) e is coprime with (p-1)(q-1). Going forward I will refer to (p-1)(q-1) as M for shorter notation.
 
 ----
-### Proving e has an inverse d modulo N when e is coprime with N, for a given e and N
+### Proving e has an inverse d modulo M when e is coprime with x
+
+(*Note that all of this works perfectly fine for M = (p-1)(q-1) and any other integer M*)
 
 First we have to prove Bezout's identity, a foundational result in number theory.
 
@@ -148,6 +224,8 @@ Therefore d divides a. We can repeat the same arugment for b.
 
 To show that d is the greatest common divisor, we have to show that for any other c that divides a and b, c <= d.
 
+#### Show c <= d for any other divisor c
+
 Assume c divides a and b. Then a = cx and b = cy.
 Then for d = ua + vb
 
@@ -159,23 +237,23 @@ Therefore c divides d, so c <= d.
 
 Thus d is the gcd of a and b.
 
-Now with Bezout's identity, we can show that the inverse of e modulo N exists when e and N are coprime:
+Now with Bezout's identity, we can show that the inverse of e modulo M exists when e and M are coprime:
 
-assume $$gcd(e, N) = 1$$
+assume $$gcd(e, M) = 1$$
 
-By Bezout's identity, we have $$ed + kN = 1$$
+By Bezout's identity, we have $$ed + kM = 1$$
 
-Thus $$ed - 1 = -kN$$
+Thus $$ed - 1 = -kM$$
 
-Therefore $$ed \ \equiv \ 1 \pmod{N}$$
+Therefore $$ed \ \equiv \ 1 \pmod{M}$$
 
-So finally, we know that an inverse for e exists when e is coprime with N.
+So finally, we know that an inverse for e exists when e is coprime with M.
 
 ----
 
 ### Making sure our ciphertext is decipherable
 
-Note that d is unique; otherwise would mean $$ed_1 = ed_2 \ \equiv \ 1 \pmod{N}$$, which means that $$e(d_1 - d_2) \ \equiv \ 0 \pmod{N}$$, since e is coprime to N, then we can divide by e and we see $$d_1 - d_2 = 0$$, so $$d_1 = d_2$$ and we end up with a unique d anyway)
+Note that d is unique; otherwise would mean $$ed_1 = ed_2 \ \equiv \ 1 \pmod{M}$$, which means that $$e(d_1 - d_2) \ \equiv \ 0 \pmod{M}$$, since e is coprime to M, then we can divide by e and we see $$d_1 - d_2 = 0$$, so $$d_1 = d_2$$ and we end up with a unique d anyway)
 
 Great! But there's a further issue we need to address: we need to make sure the decryption is unique. 
 This means that given a cipher c, $$c^d = m$$ should be unique. Otherwise the recipient wouldn't be able to decipher the text into a single message.
@@ -263,80 +341,11 @@ That's our definition of the set C! So that means D = C, so we now have a biject
 
 Since p and q are both prime, we know $$\phi(pq) = (p-1)(q-1)$$.
 
-Now we introduce Euler's theorem to show $$a^{(p-1)(q-1)} \ \equiv \ 1 \pmod{pq}$$ when a is coprime with pq.
+(TODO) Now we introduce Euler's theorem to show $$a^{(p-1)(q-1)} \ \equiv \ 1 \pmod{pq}$$ when a is coprime with pq.
 
-----
-#### Euler's theorem and Fermat's little theorem
 
-Euler's theorem states that for any positive integer a, if a is coprime with n, then
 
-$$a^{\phi(n)} \ \equiv \ 1 \pmod{n}$$
-
-We only care about the special case when n=pq where p and q are both primes:
-
-$$a^{(p-1)(q-1)} \ \equiv \ 1 \pmod{pq}$$
-
-Before we can prove this, we want to state a more specific theorem, called Fermat's little theorem:
-
-If n is prime and a is coprime with n, then
-
-$$a^{n-1} \ \equiv \ 1 \pmod{n}$$
-
-Proof of Fermat's little theorem:
-Take integer a and prime n such that a and n are coprime
-Then we can enumerate n-1 numbers
-
-$$a, 2a, 3a, ..., (n-1)a \ \pmod{n}$$
-
-These numbers must all be distinct. To show why, let's assume they aren't.
-
-So we choose j and k such that $$ja \ \equiv \ ka \pmod{n}$$
-
-Thus $$ja - ka = a(j-k) \ \equiv \ 0 \pmod{n}$$
-
-So n divides a(j-k), which means n divides at least one of a and (j-k).
-
-By our initial assumption though, a is coprime with n so therefore n must divide (j-k)
-
-Since j and k are both less than n, this means the difference (j-k) between the two is also less than n.
-So the only value of (j-k) that n can divide when (j-k) is less than n is 0.
-
-Thus j-k = 0, j=k, and ja = ka. This contradicts our original assumption, so the numbers must all be distinct.
-
-So this means that we have n-1 *distinct* numbers, all greater than 0. 
-Thus this list of numbers must be the same as 1 through n-1 (modulo n), albeit possibly shuffled.
-
-Since these two lists contain the same numbers (modulo n) then we get:
-
-$$a \cdot 2a \cdot 3a \cdot ... \cdot (n-1)a \ \equiv \ 1 \cdot 2 \cdot 3 \cdot ... \cdot (n-1) \pmod{n}$$
-
-We can reduce this:
-
-$$a^{(n-1)} \cdot (n-1)! \ \equiv \ (n-1)! \pmod{n}$$
-
-Since all the numbers 1 through n-1 are not divisible by n, then we can divide out the (n-1)! factor:
-
-$$a^{(n-1)} \ \equiv \ 1 \pmod{n}$$
-
-Thus we've proved Fermat's little theorem, and we can now prove Euler's more general theorem, specifically for n=pq when p and q are prime.
-
-Proof of Euler's theorem for n=pq:
-
-$$
-\begin{align}
-& a^{(p-1)(q-1)} = (a^{(p-1)})^{(q-1)} \\ 
-& (a^{(p-1)})^{(q-1)} \ \equiv \ 1^{(q-1)} \pmod{p} \text{(because of FLT)} \\
-& \equiv \ 1 \pmod{p} \text{ (because 1 to anything = 1)} \\
-\end{align}
-$$
-
-You can repeat same process with p and q flipped
-
-So then $$a^{(p-1)(q-1)} \ \equiv \ 1 \pmod{p}$$ and $$a^{(p-1)(q-1)} \ \equiv \ 1 \pmod{q}$$ implies $$a^{(p-1)(q-1)} - 1$$ is divisible by both p and q, which means it's divisible by pq as well
-
-Therefore $$a^{(p-1)(q-1)} \ \equiv \ 1 \pmod{pq}$$ as well
-
-This was arguably a roundabout way to avoid some group theory. Instead of doing what we did: focusing specifically on $$\phi$$ for only prime numbers, using CRT to demonstrate multiplicativity of $$\phi$$, and using Euler's theorem to establish modulo behavior, we could've shown, using Lagrange's theorem, that $$\phi(n)$$ is the order of multiplicative group of modulo n. (Good luck with that lol)
+(TODO) This was arguably a roundabout way to avoid some group theory. Instead of doing what we did: focusing specifically on $$\phi$$ for only prime numbers, using CRT to demonstrate multiplicativity of $$\phi$$, and using Euler's theorem to establish modulo behavior, we could've shown, using Lagrange's theorem, that $$\phi(n)$$ is the order of multiplicative group of modulo n. (Good luck with that lol)
 
 Okay. Now we are *finally* ready to describe e so that we can decipher $$m^e$$ using $$c^d$$ where $$ed \ \equiv \ 1 \pmod{N}$$
 
