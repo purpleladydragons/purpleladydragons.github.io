@@ -124,7 +124,7 @@ So we choose j and k such that $$ja \ \equiv \ ka \pmod{n}$$
 
 Thus $$ja - ka = a(j-k) \ \equiv \ 0 \pmod{n}$$
 
-So n divides a(j-k), which means n divides at least one of a and (j-k).
+So n divides a(j-k), which means n divides at least one of a and (j-k) (note: only true because n is prime).
 
 By our initial assumption though, a is coprime with n so therefore n must divide (j-k)
 
