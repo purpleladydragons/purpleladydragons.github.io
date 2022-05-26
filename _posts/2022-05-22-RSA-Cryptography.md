@@ -228,8 +228,13 @@ a^{(p-1)(q-1)} = 1 mod N, so now we can move forward by equating ed - 1 = k*(p-1
 So here is why it's easy to find the decryption d for the recipient and hard for anyone else.
 In order to know what phi(N) is, we have to know p and q.
 Once we do, we can set the equality: e*d - 1 = k * phi(N) = k*(p-1)(q-1)
-Rewritten: e*d - k(p-1)(q-1) = 1
-We have one more theorem to look at now: Bezout's identity.
+Rewritten: ed - k(p-1)(q-1) = 1
+
+Now we are just two steps away from showing that d exists and that c^d is a unique solution for x^e = c mod N.
+
+We'll use Bezout's identity to show that gcd(e, (p-1)(q-1)) = 1 and we'll use another theorem to show that gcd(e, (p-1)(q-1)) = 1 means that a unique d exists for de = 1 mod (p-1)(q-1).
+
+So let's look at these two theorems.
 
 Bezout's identity tells us that ax + by = gcd(a,b). 
 
