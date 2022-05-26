@@ -228,12 +228,10 @@ a^{(p-1)(q-1)} = 1 mod N, so now we can move forward by equating ed - 1 = k*(p-1
 So here is why it's easy to find the decryption d for the recipient and hard for anyone else.
 In order to know what phi(N) is, we have to know p and q.
 Once we do, we can set the equality: e*d - 1 = k * phi(N) = k*(p-1)(q-1)
+
 Rewritten: ed - k(p-1)(q-1) = 1
-
 Now we are just two steps away from showing that d exists and that c^d is a unique solution for x^e = c mod N.
-
 We'll use Bezout's identity to show that gcd(e, (p-1)(q-1)) = 1 and we'll use another theorem to show that gcd(e, (p-1)(q-1)) = 1 means that a unique d exists for de = 1 mod (p-1)(q-1).
-
 So let's look at these two theorems.
 
 Bezout's identity tells us that ax + by = gcd(a,b). 
@@ -309,7 +307,154 @@ If you didn't know p and q, then your two options for finding d are:
 2. computing the e-th root of c modulo N, which is actually equivalent to finding p and q
 
 ## An algorithm for finding d and decrypting your message
-TODO describe extended Euclidean algo more and show the code for it
+
+So with all this we've shown that d should theoretically exist and decrypt c back into a unique message. 
+But we still haven't covered how. At the beginning of the post, I said that decrypting the message should
+be hard for eavesdroppers and easy for the recipient. This is possible because the recipient knows something
+no one else does: p and q.
+
+The extended Euclidean algorithm tells us how to compute the coefficients for ax + by = gcd(a,b).
+Note that this is Bezout's identity again.
+
+I'm not going to go as deep on this because honestly I don't deeply understand why it works. 
+
+But the idea is that you define a recursive algorithm on a and b. 
+You basically start by dividing a by b (assuming a is bigger), and keeping the remainder.
+You then divide b by that remainder, and again, you keep the new remainder.
+Now you divide the *first* remainder by the *second* remainder. And again, you take the remainder from this.
+And so on until the remainder is 0. Then the remainder before that is the gcd of a and b.
+
+That gives you the gcd, but we ultimately care about the coefficients as well. The extended algorithm,
+in addition to telling us gcd(a,b), also tells us the coefficients x and y. We don't just keep track of
+the remainders each time, but we also keep track of two other variables that we can call s and t.
+Their sequences evolve like s_{i+1} = s_{i-1} - q_i*s_i. The first couple are defined ahead time as
+s_0 = 1, s_1 = 0, t_0 = 0, and t_1 = 1. To be honest, I'm not even going to pretend I understand why this works.
+
+But now we can actually implement basic RSA altogether.
+
+### Code
+
+```python
+
+import random
+
+def miller_rabin_check(x):
+    """
+    Non-deterministic check whether x is prime or not 
+    """
+    ds = x - 1
+    s = 0
+    while ds & 1 == 0:
+        s += 1
+        ds = ds >> 1
+
+    num_bases = 10
+    bases = [random.randint(1, x - 1) for _ in range(num_bases)]
+
+    for base in bases:
+        m = pow(base, ds, x)
+        if m != 1:
+            return False
+
+    return True
+
+
+def generate_prime(bits):
+    """
+    This is a common method for generating large primes for RSA. 
+    
+    Generate a random number with b bits. From there, just keep checking every odd number until
+    it's prime.
+    """
+    x = random.getrandbits(bits)
+    if x % 2 == 0:
+        x += 1
+    while not miller_rabin_check(x):
+        x += 2
+
+    return x
+
+
+def create_pq(bits):
+    """
+    We assume for now that we're using e=3 as our public exponent,
+    so we need to make sure that p and q are relatively prime with 3.
+    """
+    p = generate_prime(bits)
+
+    while (p-1) % 3 == 0:
+        p = generate_prime(bits)
+
+    q = generate_prime(bits)
+
+    while (q - 1) % 3 == 0:
+        q = generate_prime(bits)
+
+    return p, q
+
+
+def create_public_key(p, q):
+    n = p * q
+    e = 3
+
+    return e, n
+
+
+def create_private_key(bits, public_key):
+    random_key = random.getrandbits(bits)
+    e, n = public_key
+    encrypted_key = pow(random_key, e, n)
+
+    return random_key, encrypted_key
+
+
+def inverse_modulo(e, m):
+    s0, t0 = 1, 0
+    s1, t1 = 0, 1
+    while e > 0:
+        q, r = divmod(m, e)
+        s = s0 - q * s1
+        t = t0 - q * t1
+
+        m = e
+        e = r
+        s0 = s1
+        t0 = t1
+        s1 = s
+        t1 = t
+
+    gcd, s, t = m, s0, t0
+
+    return gcd, s, t
+
+
+
+def decrypt_msg(msg, p, q):
+    e = 3
+    phi = (p-1) * (q-1)
+    _, _, d = inverse_modulo(e, phi)
+
+    if d < 0:
+        d += phi
+
+    original_msg = pow(msg, d, p*q)
+
+    return original_msg
+
+def rsa():
+    asym_bits = 512
+    sym_bits = 256
+
+    bob_pq = create_pq(asym_bits)
+    bob_pub_key = create_public_key(*bob_pq)
+    alice_private_key, alice_encrypted_private_key = create_private_key(sym_bits, bob_pub_key)
+    bob_decrypted_alice_key = decrypt_msg(alice_encrypted_private_key, *bob_pq)
+
+    assert alice_private_key == bob_decrypted_alice_key
+
+rsa()
+```
+
 
 ## Practical caveats
 
