@@ -1,77 +1,31 @@
-## Goal
-We want to communicate securely across an insecure channel. We assume that we're unable to share even a primary secret between two parties without an eavesdropper. So we have to send secure messages from the start.
+The idea behind cryptographic communication is that it should be hard/impossible for
+eavesdroppers to decrypt the messages, but relatively easy for the intended recipient
+to decrypt.
 
-To do so, we have to use asymmetric key encryption. This is opposed to symmetric key encryption, where both parties know and share the secret key. This means that each person has their own secret key. In practice, asymmetric key exchange is used to securely establish a shared secret key for further communication since symmetric encryption/decryption is faster than asymmetric. (This is basically because when both parties know the secret, they can use simpler operations than used by asymmetric encryption, ie they use xor whereas asymmetric uses power and modulus.)
+For this to work at all in general, the recipient *must* know something that eavesdroppers don't.
 
-We have two major asymmetric systems: ElGamal and RSA. 
-ElGamal is based on Diffie-Hellman key exchange, which is based on discrete logarithms. 
-RSA is based on integer factorization. 
+To build up to how RSA and communicating across an insecure channel works, we can first
+observe that there are a whole class of problems that are incredibly hard to solve,
+but easy to verify. These are NP-complete problems. 
 
-By "based on", I mean that the security of these systems ultimately depend on how hard it is to solve these underlying problems. 
-(And technically, the systems are possibly weaker than these underlying problems since they make public some extra information that makes the problems slightly different)
+Integer factoring is an example of one such problem.
+What are the prime factors of 3788785476918598522485392151940648251?
+I'll even give you a hint by telling you that it only has two prime factors.
 
-## RSA
+To figure it out will take a bit of time. But if I tell you that its prime factors are
+2004827797223529579 and 1889830878325638769, you could very quickly plug that into a calculator
+to confirm.
 
-How does RSA work?
+And ultimately, integer factoring is what underpins the security of RSA encryption.
 
-### Integer factorization
-First off, we've noted that RSA will ultimately use the difficulty of integer factorization as its security measure.
-That means that for an eavesdropper to decrypt a private message, it should be (roughly) as hard as factoring some number N.
-Clearly, if we choose something trivial for N like 15, then an eavesdropper would very immediately be able to break our code.
+Essentially, to encrypt a message "m", we raise it to some power "e", 
+divide by some N, and keep the remainder as the ciphertext "c".
 
-So how do we choose a good N? 
+In notation: m^e = c mod N
 
-Well, it should be big. Integer factorization is still an "unsolved" problem. 
-We don't have any efficient algorithms for doing it, and they probably don't exist, but we don't know for sure (it basically boils down to P=NP). 
-
-In general, for a number N that is b bits, we don't have any algorithms that run in polynomial time $$O(b^k)$$. 
-The best known algorithms are sub-exponential. 
-The [general number field sieve](https://en.wikipedia.org/wiki/General_number_field_sieve) is an example of the one of the most efficient algorithms.
-As an aside, Shor's algorithm provides a polynomial solution for factoring numbers, which means that quantum computers would/could render RSA obsolete as a secure system.
-
-The hardest numbers to factor are those that are "semiprime". 
-Semiprime means that a number is a product of two primes. 
-Why are these the hardest? Well what's the alternative? All numbers factor into primes ultimately. 
-Sure, if you multipled it by another prime factor that would be even harder, but the number would be much larger and makes the system slower in general.
-When we're compromising for practical speeds for the sender and recipient, we need to be mindful of limiting how large N is. 
-For a given rough value of N, the hardest to factor numbers are semiprime. Otherwise it has more factors which are necessarily smaller and possibly repeated.
-This makes factoring significantly easier, and many of the most efficient algorithms ultimately relate to the difficulty of finding the smallest prime factor.
-
-So ultimately we have to choose two distinct (and large) primes p and q, then N=pq.
-
-> **Why can't N itself be prime?**
->
-> N cannot be prime for two reasons: we have to make N public and if N were prime, then anyone who knows N can easily decipher the message.
-> 
-> The reason that it's easy to decipher the message once you know N (if it's prime) is covered farther down in the section "Finding the decryption key d"
-
-> **Some caveats to choosing N**
->
-> In practical details, there are some extra constraints around p and q because there are several tricks that make factoring N easier under certain conditions. [Stack exchange provides an example.](https://crypto.stackexchange.com/questions/13113/how-can-i-find-the-prime-numbers-used-in-rsa)
->
-> How does one choose p and q though? For modern security, N needs to be at least 1024 bits. This means that p and q should be roughly 512 bits each. 
-> 
-> But these numbers are still massive. It would take a *while* to generate and determine whether they're prime.
-> 
-> NIST publishes prime numbers, so maybe we could use those. But this is still problematic. If you used a public and pre-generated list, 
-then suddenly the search space would be very small and it wouldn't be hard for an attacker to find p and q. 
-> 
-> In reality, there does not exist such a list for 512 bit primes. Instead, there is an algorithm to generate large primes.
-[This stackexchange answer](https://crypto.stackexchange.com/questions/1970/how-are-primes-generated-for-rsa) does a great job of explaining.
-> 
-> Essentially, you are likely to find a candidate prime after less than 200 tries starting from a random 512 bit number. 
-So that's very quick, to generate one, but to generate all of them, you'd need to do it 2^512 times which is unbelievably huge.
-(If you protest that this number includes small primes like 3 and 5 technically, then you can fix the largest bit to 1 and check for the remaining 2^511 options)
-
-### Using N to encrypt and decrypt messages
-
-Okay so we know how to choose a big N now. How do we actually use this information to encrypt and decrypt a message?
-
-First off, realize that a message can be converted to ASCII / bits. Once you encode your message into bits, then that means it has a numerical value in base 10 as well.
-This value `m` represents our message, and is what we want to hide from eavesdroppers.
-
-A useful property of modular arithmetic is that exponentiation seems to generate random outputs. This is good for encryption! It means that if we put in two nearly identical messages, we get two totally different results. This means that someone monitoring all the encrypted messages, no matter how many, should not be able to learn anything about the secret messages.
-It's generally held in consensus that the outputs are truly pseudorandom and not predictable. But there's no proof yet. 
+The security of this ultimately depends on two facts:
+1. modular exponentiation seems to output random results and you can't simply reverse the procedure
+2. if you know the prime factors of the modulus, then you *can* invert the exponentiation, but it's incredibly hard to find the prime factors of large numbers
 
 <p align="center">
 <img src="https://raw.githubusercontent.com/purpleladydragons/purpleladydragons.github.io/master/images/rsa-cryptography/rsa-exp-mod-random.png" width="340"/>
@@ -79,128 +33,221 @@ It's generally held in consensus that the outputs are truly pseudorandom and not
 
 <p align="center"><i>Applying y=x^e mod N for several thousand x with e=3 and N=30402457</i></p>
 
+To decrypt, we are looking for d such that c^d = m mod N.
+In other words, m^e^d = c mod N, or m^(ed) = c mod N
 
-So to encrypt our message m, we will exponentiate it to some power e, and then mod it by N: $$c \ \equiv \ m^e \pmod{N}$$. 
+For this to be useful it needs to satisfy several constraints:
+- c should be decipherable!
+  - this means d should be guaranteed to exist
+  - x^e = c mod N should have a unique solution of x=c^d. Otherwise the recipient can't recover a unique message
+- it should be hard for eavesdroppers to decrypt
+- it should be easy for the recipient to decrypt
 
-### Choosing e
+Finding such a d is not trivial under all circumstances. In fact, it might not even exist!
 
-This is by far the longest section. Now that we've specified N, we have to satisfy some properties when choosing e for everything to work. 
-I've tried to present this choice as naturally as possible while also proving the results we need to justify our choice.
-One thing that always irks me in mathematical texts is how theorems seem to just pop up out of nowhere. 
-The relevance is rarely apparent at first and often looks like pulling a rabbit out of a hat when you need to.
-I've tried to limit that experience here, 
-but there are still some foundational number theory results here that are useful/needed 
-that I think may appear jarring/convenient unless you were already familiar with them.
+Note that exponents and logarithms behave very differently modulo some N, than they do normally.
+The algorithm for computing a discrete logarithm (in order to reverse the effect of m^e) essentially
+requires factoring the modulus N.
 
-We've said already that N should be a very large (1024 bits) semiprime number. But what should e be?
+So before we can address how it's possible for the recipient to decrypt c,
+while making sure it's still hard/impossible for eavesdroppers, we have to prove
+that it's even mathematically possible.
 
-To decrypt the ciphertext, we want to "undo" the encryption of our message m. $$m^e \pmod{N} = c$$ means then that we want to find some decryption key d
-such that $$c^{d} = m^{e^d} \ \equiv \ m \pmod{N}$$.
+To make sure that we can find d satisfying c^d = m mod N we have to be specific 
+when choosing N and e. 
 
-**Note:** this does *not* imply that $$de \ \equiv \ 1 \pmod{N}$$
+We already said that N should be a very large number that has two prime factors.
+So then how do we choose e?
 
-This was a major confusion for me because by normal arithmetic rules, if you need to find d such that $$m^{de} = m$$, then clearly d is the multiplicative inverse of e. 
-But it's not that simple in modular arithmetic.
+We know that m^(ed) = m mod N, this means that m^(ed - 1) = 1 mod N
 
-In fact, we need to find d such that $$de \ \equiv \ 1 \pmod{(p-1)(q-1)}$$ (note the different modulus)
-
-I personally found this to be totally jarring and poorly explained when I encountered it. Fortunately [this stackexchange answer](https://crypto.stackexchange.com/questions/16482/rsa-fermats-little-theorem-and-the-multiplicative-inverse-relationship-between) does a fantastic job of explaining why. Before you read that answer though, it's helpful to know about Fermat's little theorem and Euler's theorem.
-
-### Fermat's little theorem and Euler's theorem
-
-Fermat's little theorem stats that if n is prime and a is coprime with n, then
-
-$$a^{n-1} \ \equiv \ 1 \pmod{n}$$
-
-Proof of Fermat's little theorem:
-Take integer a and prime n such that a and n are coprime
-Then we can enumerate n-1 numbers
-
-$$a, 2a, 3a, ..., (n-1)a \ \pmod{n}$$
-
-These numbers must all be distinct. To show why, let's assume they aren't.
-
-So we choose j and k such that $$ja \ \equiv \ ka \pmod{n}$$
-
-Thus $$ja - ka = a(j-k) \ \equiv \ 0 \pmod{n}$$
-
-So n divides a(j-k), which means n divides at least one of a and (j-k) (note: only true because n is prime).
-
-By our initial assumption though, a is coprime with n so therefore n must divide (j-k)
-
-Since j and k are both less than n, this means the difference (j-k) between the two is also less than n.
-So the only value of (j-k) that n can divide when (j-k) is less than n is 0.
-
-Thus j-k = 0, j=k, and ja = ka. This contradicts our original assumption, so the numbers must all be distinct.
-
-So this means that we have n-1 *distinct* numbers, all greater than 0. 
-Thus this list of numbers must be the same as 1 through n-1 (modulo n), albeit possibly shuffled.
-
-Since these two lists contain the same numbers (modulo n) then we get:
-
-$$a \cdot 2a \cdot 3a \cdot ... \cdot (n-1)a \ \equiv \ 1 \cdot 2 \cdot 3 \cdot ... \cdot (n-1) \pmod{n}$$
-
-We can reduce this:
-
-$$a^{(n-1)} \cdot (n-1)! \ \equiv \ (n-1)! \pmod{n}$$
-
-Since all the numbers 1 through n-1 are not divisible by n, then we can divide out the (n-1)! factor:
-
-$$a^{(n-1)} \ \equiv \ 1 \pmod{n}$$
-
-Thus we've proved Fermat's little theorem.
-
-Euler's theorem generalizes Fermat's little theorem and states that for any positive integer a, if a is coprime with n, then
-
-$$a^{\phi(n)} \ \equiv \ 1 \pmod{n}$$
-
-We only care about the special case when n=pq where p and q are both primes:
-
-$$a^{(p-1)(q-1)} \ \equiv \ 1 \pmod{pq}$$
-
-But what is $$\phi(n)$$? It's too early to introduce it here fully, but it's a function that returns the number of integers less than n that are coprime with n. We'll describe it in more detail later, but for now we only care the specific case when n=pq where p and q are distinct primes. In this case $$\phi(pq) = (p-1)(q-1)$$ (if you're too bothered by this, you can skip ahead to the "Chinese remainder theorem" (TODO or another?) section)
-
-Proof of Euler's theorem for n=pq:
-
-$$
-\begin{align}
-& a^{(p-1)(q-1)} = (a^{(p-1)})^{(q-1)} \\ 
-& (a^{(p-1)})^{(q-1)} \ \equiv \ 1^{(q-1)} \pmod{p} \text{(because of FLT)} \\
-& \equiv \ 1 \pmod{p} \text{ (because 1 to anything = 1)} \\
-\end{align}
-$$
-
-You can repeat same process with p and q flipped
-
-So then $$a^{(p-1)(q-1)} \ \equiv \ 1 \pmod{p}$$ and $$a^{(p-1)(q-1)} \ \equiv \ 1 \pmod{q}$$ implies $$a^{(p-1)(q-1)} - 1$$ is divisible by both p and q, which means it's divisible by pq as well
-
-Therefore $$a^{(p-1)(q-1)} \ \equiv \ 1 \pmod{pq}$$ as well
-
----
-
-Okay so with all that out of the way, we now know we want to find d such that $$de \ \equiv \ 1 \pmod{(p-1)(q-1)}$$
-
-But does such a d even exist? Yes, if (and only if) e is coprime with (p-1)(q-1). Going forward I will refer to (p-1)(q-1) as M for shorter notation.
+To move forward, we will have to take a bit of a detour.
 
 ----
-### Proving e has an inverse d modulo M when e is coprime with x
+## Detour into number theory
 
-(*Note that all of this works perfectly fine for M = (p-1)(q-1) and any other integer M*)
+First we introduce Euler's totient function. 
+Euler's totient function phi(n) is defined such that 
+phi(n) = the number of positive integers less than n that are relatively prime with n.
 
-First we have to prove Bezout's identity, a foundational result in number theory.
+<p align="center">
+<img src="https://raw.githubusercontent.com/purpleladydragons/purpleladydragons.github.io/master/images/rsa-cryptography/euler-totient.png" width="340"/>
+</p>
 
-Bezout's identity states that for two integers a and b with gcd(a,b) = d, 
-then there exist integers x and y such that ax + by = d.
-We'll actually prove a slightly weaker version of the identity by assuming that a and b are positive.
+<p align="center"><i>Euler's totient function phi(n)</i></p>
 
-Given positive integers a and b, we construct the set S {ax + by | x,y s.t ax + by > 0}.
+If n is prime, then it's obvious that phi(n) = n-1 because by the definition of n being prime,
+it means that *none* of the numbers less than n divide n. 
+Therefore all n-1 numbers less than n are relatively prime with n.
 
-S is non-empty since y=0, x=1 satisfies the set criterion for all positive a. S also has a minimum d because it is a set of positive integers.
+phi(n) doesn't have a closed form in general, but we are only concerned about the
+case when n=N=p*q, and fortunately there is a closed form for that!
+
+We know that p and q are both prime, and we know that phi(n) = n-1 when n is prime.
+So we know that phi(p) = p-1 and phi(q) = q-1. 
+
+How does that help us determine phi(pq)?
+
+Well, we can make use of another theorem called the Chinese remainder theorem.
+
+The Chinese remainder theorem states that for a system of congruences
+
+x = a % n and x = b % m where n and m are coprime
+
+then x exists and x is unique modulo n*m.
+
+Before we prove the CRT, I want to explain how we make use of it.
+With the CRT, it means that if we choose p and q ahead of time,
+then we can take any pair of ints (a,b) and map it directly to some value x.
+
+Remember that phi(n) is the number of numbers less than n that are relatively prime with n,
+and that we care about phi(p) and phi(q) where p and q are both prime.
+So we can describe sets A and B as A = { 1 <= a < p } and B = { 1 <= b < q }.
+By CRT, we now know that we can take any pair in AxB and map it to some unique value x modulo p*q.
+But think about that! We have constructed a bijection from AxB to a set C where every element in C
+is unique modulo p*q. In other words, the set C is composed of numbers less than p*q and relatively prime with p*q.
+Then |C| is exactly the definition of phi(pq)! And we've shown that there's a bijection from AxB -> C, so
+clearly |C| = |A|*|B| = phi(pq) = phi(p)phi(q).
+
+Now to make sure we're good, let's prove the CRT.
+We're going to only prove the CRT for the system of two congruences because that's all we need.
+
+We want to prove that for the system of two congruences, and assuming n and m are coprime
+
+x = a mod n and x = b mod m
+
+that there is a unique solution modulo m*n.
+
+First, we show that a solution exists.
+
+From the first congruence, x = ny + a for some y.
+Thus ny + a = b mod m
+
+So ny = b - a mod m
+
+Because gcd(n,m) = 1, this means that we know n has a multiplicative inverse mod m, which we can call n'.
+
+Then n'ny = n'(b-a) mod m
+
+We can cancel n'n because n'n = 1 mod m: y = n'(b-a) mod m. Which can be rewritten as y = zm + n'(b-a).
+
+Plugging this back into the first equation: x = ny + a, then x = m(zm + n'(b-a)) + a
+
+We don't need to reduce this any further! We've now shown that a solution for x exists satisfying both congruences.
+
+Now we need to prove the solution is unique.
+
+Assume x=c and x=c' both solve the system
+
+Then c is congruent to c' mod m, ie c ≡ c' mod m
+
+So c=my+c', then c−c'=my
+
+So (c - c') is divisible by m
+
+We can repeat the same line of reasoning for n instead of m, so that (c - c') is divisible by n
+
+Because gcd(m,n) = 1 then this means that mn also divides (c - c')
+
+Which means c ≡ c' mod mn
+
+In other words, x = c and x = c' implies c is unique modulo mn
+
+So now we've proven the Chinese remainder theorem and used it prove that phi(N) = (p-1)(q-1).
+
+Even still, our detour is not yet done. We've shown that phi(N) = (p-1)(q-1) but this doesn't
+immediately help us make anything out of m^(ed - 1) = 1 mod N.
+
+For that, we need Euler's theorem. Euler's theorem tells us that if a and n are coprime then
+
+a^phi(n) = 1 mod n 
+
+This is useful because it means that we can now make the equality:
+
+m^(ed - 1) = m^phi(N) = 1 mod N
+
+So now we can equate: ed - 1 = k*phi(N) = k*(p-1)(q-1) for some k
+
+But before we go further with that, let's prove Euler's theorem to be sure.
+
+We won't bother proving Euler's theorem in general, we'll just prove it for when n=p*q where p and q are prime.
+
+That means we need to prove
+
+a^{(p-1)(q-1)} = 1 mod pq
+
+We will solve this by using another theorem called Fermat's little theorem which really is just
+a specific case of Euler's theorem for when n is prime. Fun fact: though named after Fermat, it was proved by Euler!
+
+So let's focus on proving
+
+a^(n-1) = 1 mod n 
+
+when n is prime and a is relatively prime with n.
+
+Let's start by listing the finite sequence of numbers:
+
+a, 2a, ..., (n-1)a mod n
+
+Clearly we have n-1 numbers here. We can also prove that they are all distinct modulo n:
+
+Assume that they're not distinct! Then there must be j and k such that j*a = k*a mod n.
+
+This means j*a - k*a = 0 mod n. Or in other words a(j-k) = 0 mod n.
+
+By our initial assumption that a and n are coprime, then we know n does not divide a.
+Therefore n must divide (j-k). But since j and k both lie in the range 1 <= x < n,
+we know that j-k has to be smaller than n as well. Therefore the only value for j-k = 0 mod n
+is 0. Thus j = k, and so we've reached a contradiction, and therefore all a, 2a, ..., (n-1)a are unique modulo n.
+
+So this means we have n-1 numbers that are necessarily all in the range 1 through n-1, and they're all distinct.
+Then clearly this set is equivalent to the set of numbers 1 through n-1.
+Thus a*2a*...*(n-1)a = 1*2...*(n-1) mod n
+
+Rewritten: a^(n-1) * (n-1)! = (n-1)! mod n
+Since (n-1)! is relatively prime with n, we can divide it out from both sides.
+Therefore a^(n-1) = 1 mod n.
+Fantastic!
+
+So now back to the case when n=pq, we need to prove
+
+a^{(p-1)(q-1)} = 1 mod pq
+
+We can rewrite this as (a^(p-1))^(q-1) = 1 mod pq
+From FLT, we now know a^(p-1) = 1 mod p. But what about modulo pq?
+Yes, it still works! Because a is relatively prime with both p and q, so multiplying the modulus by q
+changes nothing about a^(p-1).
+Therefore we get 1^(q-1) = 1 mod pq. And 1 to the anything is 1, so we've proven Euler's theorem for pq!
+
+---
+## Back to finding d
+
+So to recap, we previously found that m^(ed - 1) = 1 mod N, and we've now proven that
+a^{(p-1)(q-1)} = 1 mod N, so now we can move forward by equating ed - 1 = k*(p-1)(q-1)
+
+So here is why it's easy to find the decryption d for the recipient and hard for anyone else.
+In order to know what phi(N) is, we have to know p and q.
+Once we do, we can set the equality: e*d - 1 = k * phi(N) = k*(p-1)(q-1)
+Rewritten: e*d - k(p-1)(q-1) = 1
+We have one more theorem to look at now: Bezout's identity.
+
+Bezout's identity tells us that ax + by = gcd(a,b). 
+
+This is useful for us because ed - k(p-1)(q-1) satisfies this form and tells us that gcd(e, (p-1)(q-1)) = 1.
+Knowing that e and (p-1)(q-1) are coprime tells us that e is guaranteed to have a multiplicative inverse mod pq.
+
+Let's prove those two statements before moving on.
+
+Bezout’s identity states that for two integers a and b with gcd(a,b) = d, then there exist integers x and y such that ax + by = d. We’ll actually prove a slightly weaker version of the identity by assuming that a and b are positive.
+Given positive integers a and b, we construct the set S {ax + by \| x,y s.t ax + by > 0}.
+
+S is non-empty since (y=0, x=1) satisfies the set criterion for all positive a. 
+S also has a minimum d because it is a set of positive integers. 
 We want to show that d is also the gcd of a and b.
 
 To do so, we have to show that d divides a and b, and that for any other divisor c of a and b, c <= d.
 
-#### Show d divides a and b
+Show d divides a and b
 
 We can write the division of a by d as a = nd + r.
 
@@ -214,20 +261,16 @@ Thus r = a - n(ax + by)
 
 = a(1 - nx) + (-ynb)
 
-So we've rewritten r in the form of ax + by. 
-We also know r is non-negative because since d is minimum of S, then d <= a so we can always choose a non-negative r satisfying nd + r = a.
+So we’ve rewritten r in the form of ax + by. We also know r is non-negative because since d is minimum of S, then d <= a so we can always choose a non-negative r satisfying nd + r = a.
 
-But we also know r < d, because otherwise we rewrite a = nd + r as a = (n+1)d + (r-d).
-Since d is the minimum of S and is positive, then r has to be 0.
+But we also know r < d, because otherwise we rewrite a = nd + r as a = (n+1)d + (r-d). Since d is the minimum of S and is positive, then r has to be 0.
 
 Therefore d divides a. We can repeat the same arugment for b.
 
 To show that d is the greatest common divisor, we have to show that for any other c that divides a and b, c <= d.
+Show c <= d for any other divisor c
 
-#### Show c <= d for any other divisor c
-
-Assume c divides a and b. Then a = cx and b = cy.
-Then for d = ua + vb
+Assume c divides a and b. Then a = cx and b = cy. Then for d = ua + vb
 
 d = u(cx) + v(cy)
 
@@ -237,164 +280,49 @@ Therefore c divides d, so c <= d.
 
 Thus d is the gcd of a and b.
 
-Now with Bezout's identity, we can show that the inverse of e modulo M exists when e and M are coprime:
+Now that we have Bezout's identity, we can prove that a and m being coprime implies that a has a multiplicative inverse modulo m.
 
-assume $$gcd(e, M) = 1$$
+Assume gcd(a,m) = 1. Then we know from Bezout's identity we have a*b + c*m = 1 for some b and c.
+Thus a*b - 1 = -cm.
+Therefore a*b = 1 mod m.
 
-By Bezout's identity, we have $$ed + kM = 1$$
+Now we finally know that d exists and provides a unique decryption when e is relatively prime with (p-1)(q-1).
+This actually gives us the constraint we need for how to choose e and N.
+Since p and q are both prime, p-1 and q-1 are both even, which means that e needs to be odd.
+A possible choice is e=3. Note that if you choose e=3, then you can't choose any p and q that you want.
+For example p=19 would break things because p-1 = 18 and 18 is divisible by 3, so we lose the gcd(e, (p-1)(q-1))=1 property,
+which means we can't recover m from c^d because c^d might not be unique or d might not even exist.
 
-Thus $$ed - 1 = -kM$$
+But how does knowing all this actually help you find the value of d?
+Fortunately, we have the extended Euclidean algorithm (covered in section below) which tells us how to find
+the coefficients x and y for ax + by = 1 when gcd(a,b) = 1. 
+If we substitute e for a and (p-1)(q-1) for b, then we can find d in logarithmic time.
+Remember that an eavesdropper doesn't know p or q, so they can't take advantage of this algorithm.
 
-Therefore $$ed \ \equiv \ 1 \pmod{M}$$
+If you didn't know p and q, then your two options for finding d are:
+1. trying to find p and q, which will take a very long time
+2. computing the e-th root of c modulo N, which is actually equivalent to finding p and q
 
-So finally, we know that an inverse for e exists when e is coprime with M.
+## An algorithm for finding d and decrypting your message
+TODO describe extended Euclidean algo more and show the code for it
 
-----
+## Practical caveats
 
-### Making sure our ciphertext is decipherable
+This is pretty much the most basic version of RSA that we can get. 
+In reality, we have to do some extra work.
 
-Note that d is unique; otherwise would mean $$ed_1 = ed_2 \ \equiv \ 1 \pmod{M}$$, which means that $$e(d_1 - d_2) \ \equiv \ 0 \pmod{M}$$, since e is coprime to M, then we can divide by e and we see $$d_1 - d_2 = 0$$, so $$d_1 = d_2$$ and we end up with a unique d anyway)
+Wikipedia provides a [nice list](https://en.wikipedia.org/wiki/RSA_(cryptosystem)#Attacks_against_plain_RSA) of some attacks against basic RSA.
 
-Great! But there's a further issue we need to address: we need to make sure the decryption is unique. 
-This means that given a cipher c, $$c^d = m$$ should be unique. Otherwise the recipient wouldn't be able to decipher the text into a single message.
-(Note of course that just because d is unique doesn't mean $$c^d \pmod{N}$$ has to be. For the trivial example, if d = N-1 (with prime N), then $$c^d \ \equiv \ 1 \pmod{N}$$ for all c)
+### Caveats to choosing N
 
-So how do we guarantee that $$c^d$$ is unique? We need to choose an e such that $$c^d$$ has this property. And how do we do that?
+In practical details, there are some extra constraints around p and q because there are several tricks that make factoring N easier under certain conditions. Stack exchange provides an example.
 
-Let's first introduce Euler's formula.
-Euler's formula is a function $$\phi(n)$$ defined as 
+How does one choose p and q though? For modern security, N needs to be at least 1024 bits. This means that p and q should be roughly 512 bits each.
 
-$$\phi(n) = \text{the number of positive integers less than n that are coprime to n}$$
+But these numbers are still massive. It would take a while to generate and determine whether they’re prime.
 
-We're going to focus only on $$\phi(n)$$ for prime n. In which case, $$\phi(n) = n-1$$ trivially because of the definition of n being prime: there are no numbers less than n that divide n. 
+NIST publishes prime numbers, so maybe we could use those. But this is still problematic. If you used a public and pre-generated list, then suddenly the search space would be very small and it wouldn’t be hard for an attacker to find p and q.
 
-But we're focused on N=pq, and N is not prime, so what can we do with our knowledge of $$\phi$$?
+In reality, there does not exist such a list for 512 bit primes. Instead, there is an algorithm to generate large primes. This stackexchange answer does a great job of explaining.
 
-Luckily, $$\phi(N)$$ is multiplicative in this case meaning that $$\phi(pq) = \phi(p)\phi(q)$$.
-To show so we leverage the so-called Chinese remainder theorem.
-
-----
-
-#### Chinese remainder theorem and its proof
-
-The Chinese remainder theorem is another foundational result in number theory. The original problem dates back to the 4th century!
-
-We'll show a weak version of the CRT here instead of the fully generalized version: If we have two numbers m and n that are coprime (gcd(m,n) = 1),
-then the system $$x \ \equiv \ a \pmod{m}$$ and $$x \ \equiv \ b \pmod{n}$$ has a unique solution.
-
-First we prove that a solution always exists.
-
-From the first congruence: $$x = my + a$$
-
-We can plug this into the second congruence to get $$my + a \ \equiv \ b \pmod{n}$$
-
-Thus $$my \ \equiv \ b - a \pmod{n}$$
-
-Because gcd(m,n) = 1, we know that m has an inverse modulo n. Let's call it m'
-
-Then $$m'my \ \equiv \ m'(b-a) \pmod{n}$$
-
-We can cancel m'm because we're showing congruence modulo n: $$y \ \equiv \ m'(b-a) \pmod{n}$$ 
-
-Rewrite this as multiplication with remainder: $$y = zn + m'(b-a)$$
-
-Plug this back into the first equation $$x = my + a$$: $$x = m(zn + m'(b-a)) + a$$
-
-We can't reduce this further (because we're no longer working in modulo, so m' is not generally the inverse of m)
-
-But we've shown that the solution for x in this system has this form
-
-Now we prove that the solution is unique.
-
-Assume $$x = c$$ and $$x = c'$$ both solve the system
-
-Then c is congruent to c' mod m, ie $$c \ \equiv \ c' \pmod{m}$$
-
-So $$c = my + c'$$, then $$c - c' = my$$
-
-So (c - c') is divisible by m
-
-We can repeat the same line of reasoning for n instead of m, so that (c - c') is divisible by n
-
-Because gcd(m,n) = 1 then this means that mn also divides (c - c')
-
-Which means $$c \ \equiv \ c' \pmod{mn}$$
-
-In other words, x = c and x = c' implies c is unique modulo mn
-
-----
-
-This is important because it allows us to construct a bijection which shows that $$\phi$$ is multiplicative.
-
-Specifically, say we have distinct primes p and q, and say we have the sets A,B,C where A is the set of integers coprime to p, B is the set of integers coprime to q, and C is the set of integers coprime to pq. 
-
-So \|A\| = $$\phi(p)$$, \|B\| = $$\phi(q)$$, and \|C\| = $$\phi(pq)$$
-
-If we can demonstrate a bijection between AxB and C, then that means that $$\phi$$ is multiplicative and we know that $$\phi(pq) = \phi(p)\phi(q)$$
-
-The set AxB is every pair (a,b) such that gcd(a,p) = 1 and gcd(b,q) = 1 where a < p and b < q.
-We take every pair (a,b) and run it through f(a,b): $$y \ \equiv \ a \pmod{p}$$ and $$y \ \equiv \ b \pmod{n}$$.
-From the CRT, we know that each pair maps to exactly one solution. So we have a bijection from AxB to some set of integers D.
-
-But we can show that D = C: if d is a solution to f(a,b) then that means d is coprime to both p and q. Since gcd(p,q) = 1 then d is also coprime to pq. 
-That's our definition of the set C! So that means D = C, so we now have a bijection from AxB to C which allows us to treat $$\phi$$ as a multiplicative function.
-
-Since p and q are both prime, we know $$\phi(pq) = (p-1)(q-1)$$.
-
-(TODO) Now we introduce Euler's theorem to show $$a^{(p-1)(q-1)} \ \equiv \ 1 \pmod{pq}$$ when a is coprime with pq.
-
-
-
-(TODO) This was arguably a roundabout way to avoid some group theory. Instead of doing what we did: focusing specifically on $$\phi$$ for only prime numbers, using CRT to demonstrate multiplicativity of $$\phi$$, and using Euler's theorem to establish modulo behavior, we could've shown, using Lagrange's theorem, that $$\phi(n)$$ is the order of multiplicative group of modulo n. (Good luck with that lol)
-
-Okay. Now we are *finally* ready to describe e so that we can decipher $$m^e$$ using $$c^d$$ where $$ed \ \equiv \ 1 \pmod{N}$$
-
-Start with $$c^{d} = m \ \equiv \ m^{e^d} \pmod{N}$$
-
-From theorem above, we know $$m^{\phi(N)} \ \equiv \ 1 \pmod{N}$$ 
-
-Take them to the kth power, $$m^{k\phi(N)} \ \equiv \ 1 \pmod{N}$$ (because 1^k = 1)
-
-Multiply both sides by m, $$m^{(k\phi(N) + 1)} \ \equiv \ m \pmod{N}$$
-
-$$m^{(k\phi(N) + 1)} = m^{ed} \pmod{N}$$
-
-$$k\phi(N) + 1 = ed$$
-
-This is important! This basically is another way of saying $$ed \ \equiv \ 1 \pmod{\phi(N)}$$
-Since $$\phi$$ is multiplicative, $$\phi(N) = \phi(p)\phi(q) = (p-1)(q-1)$$
-So $$ed = 1 \pmod{(p-1)(q-1)}$$
-And therefore we know then that gcd(e, (p-1)(q-1)) = 1
-
-So going back again, assume m = u is a solution to $$m^e = c \pmod{N}$$.
-
-Because $$k(p-1)(q-1) + 1 = de$$, and since $$u = u^1$$ obviously, then we can get $$u = u^{de - k(p-1)(q-1)}$$
-
-$$\equiv \ u^{ed} \cdot u^{((p-1)(q-1))^{-k}} \pmod{pq}$$
-
-$$\equiv \ u^{ed} \cdot 1^{-k} \pmod{pq}$$ ; because of Euler's theorem 
-
-$$\equiv \ c^d \pmod{pq}$$ ; because $$u^e = c$$ and $$1^{-k} = 1$$
-
-Therefore $$c^d$$ is the unique solution when gcd(e, (p-1)(q-1)) = 1
-
-So, p-1 and q-1 are both even numbers, and therefore e=3 satisfies the requirement. This actually gets used in practice!
-But most often e=65537 is chosen for more security. 3 and 65537 are both "Fermat primes" meaning they're of the form $$2^k + 1$$. 
-This makes them particularly suitable for exponentiation in terms of computability because they can be reduced to the simpler operations of
-squaring and 1 multiplication ($$x^65537 = x^{2\cdot2\cdot2\cdot...\cdot2} \cdot x$$).
-
-This was a lot of work just to choose e=3. To recap, we needed to make sure that we could undo the original encryption.
-We decrypt the ciphertext c by raising it to the dth power: $$c^d \pmod{N} \ \equiv \ m$$
-But existence wasn't just enough. We also needed to make sure that decryption was unique. 
-Otherwise the recipient could end up with multiple possible interpretations.
-
-In order for $$c^d$$ to be unique modulo N, we had to choose e carefully. 
-We did a lot of legwork to show that $$c^d$$ uniquely decrypts the original message when
-e is coprime to (p-1)(q-1). 
-
-### Finding the decryption key d!
-TODO use Euclidean algorithm with knowledge of p and q to find d so that we can therefore decrypt m^e mod N
-TODO also show why Eve can't do shit without p and q... (idk if the book actually covers this? i think it's literally an open problem)
-
-## Practical matters
-TODO start coding shit up
+Essentially, you are likely to find a candidate prime after less than 200 tries starting from a random 512 bit number. So that’s very quick, to generate one, but to generate all of them, you’d need to do it 2^512 times which is unbelievably huge. (If you protest that this number includes small primes like 3 and 5 technically, then you can fix the largest bit to 1 and check for the remaining 2^511 options)
