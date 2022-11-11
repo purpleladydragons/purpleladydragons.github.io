@@ -1,5 +1,7 @@
-I recently got access to OpenAI's beta, and I've been playing around with it. I am fanboying over it a bit to be honest. 
-It's not perfect, and at times I wondered if I was just reinventing the wheel with the stuff I was building. But it is really cool.
+I recently got access to OpenAI's beta, and I've been playing around with it. 
+It's not perfect, and at times I wondered if I was just reinventing the wheel with the stuff I was building. But it is really cool. I do think it'll transform our jobs quite soon.
+
+(Code available [here](https://github.com/purpleladydragons/seriouseats-index))
 
 As motivation, and to keep scope limited, I wanted to build a small search engine for recipes with natural language queries. 
 I had a few thoughts going into this:
