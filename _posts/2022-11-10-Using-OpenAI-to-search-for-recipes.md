@@ -59,8 +59,7 @@ I was able to use OpenAI to parse ingredients from the HTML with a small prompt.
 While not particularly hard to do with normal scraping techniques, it's stil annoying to extract, format, and segment the text nicely while dealing with nested
 divs and spans. It took much less time and effort to just prompt the AI. I was then able to send the ingredients over to a calorie counter app.
 
-<img width="950" alt="image" src="https://user-images.githubusercontent.com/1283020/201228051-d04052e9-1e8f-4f40-abc7-387370f8e243.png">
-<img width="950" alt="image" src="https://user-images.githubusercontent.com/1283020/201228094-041729a2-8d21-4f57-9827-9ea210fd06ee.png">
+<img width="1138" alt="image" src="https://user-images.githubusercontent.com/1283020/201268682-e461a4ea-65dd-43c2-a7a5-eff02153ae98.png">
 
 I was able to use the AI to recommend ingredient substitutions. 
 
