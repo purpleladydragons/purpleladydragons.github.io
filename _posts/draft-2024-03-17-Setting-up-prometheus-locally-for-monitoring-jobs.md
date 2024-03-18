@@ -1,0 +1,5 @@
+- on m1 mac
+- run docker with basic yaml file
+- set up pushgateway for jobs to push stuff
+- host internal gotcha
+- sanity check: access localhost:9091 for pushgateway, localhost:9090 for prometheus UI. can see status of Targets in prometheus UI to see if pushgateway is working
