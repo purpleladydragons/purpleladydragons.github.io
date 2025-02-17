@@ -10,3 +10,4 @@ Intuition around matrix multiplication
   - but it's still intuitive because now you just use both columns of the matrix
   - you end up with [x * col1, y * col2], which becomes the first column of the "composition" matrix of the two matrices
   - this is equivalent to the row-by-column multiplication algorithm
+  - this also gives the intuition around why matrix multiplication is *not* commutative: some transformations like scaling + rotation can be done in either order, but rotation + shear is sensitive to the order that it's performed in 
