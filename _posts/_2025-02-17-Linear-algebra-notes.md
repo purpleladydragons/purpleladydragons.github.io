@@ -1,5 +1,6 @@
 Going through 3Blue1Brown's series as a refresher
 
+**Video 4**
 Intuition around matrix multiplication
 - relationship between any vector and basis vectors is maintained
 - so if you know where the basis vectors end up after transformation, you know where any vector ends up as a linear combination of the basis vectors
@@ -11,3 +12,16 @@ Intuition around matrix multiplication
   - you end up with [x * col1, y * col2], which becomes the first column of the "composition" matrix of the two matrices
   - this is equivalent to the row-by-column multiplication algorithm
   - this also gives the intuition around why matrix multiplication is *not* commutative: some transformations like scaling + rotation can be done in either order, but rotation + shear is sensitive to the order that it's performed in 
+
+Also worth noting this is just 2D to 2D
+
+**Video 5**
+This video introduces 3D vectors and mentions the possibility of transformations between different dimenson vectors.
+Jumping ahead a bit, but geometrically the intuition seems to be that if you have a 3x2 matrix, this can act as a function on 2D vectors 
+that projects them into 3D space. But frankly my intuition is already breaking down wrt the component multiplication. 
+Say you transform the x-basis vector. According to the intuition presented in the previous video, you should just take the first column. 
+But that's not the case? Does that intuition only work for understanding NxN matrix multiplication?
+Ah okay so I suppose in that case, the first column represents where the x-basis vector projects to and second column for the y-vector. You end up projecting both into 3D vectors. Then if you have (1,1) this is where (1,1) would be projected into 3D space by this matrix / is the linear combination of the transformation of the two original basis vectors.
+
+I also find it interesting that the videos keep talking about rotations and whatnot, and how that's feasible with real numbers and yet
+complex analysis kind of reworked my brain to think that only *i* can rotate. But it makes perfect sense right? if you move the [1,0] vector to [0,1] that's 90 degrees. I'm too dumb to grok the relationship between these vector rotations and imaginary scalar rotations (probably relevant that complex numbers are basically 2D numbers)
