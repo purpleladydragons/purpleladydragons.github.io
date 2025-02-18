@@ -74,3 +74,6 @@ you can see that the other vector's projection doesn't really change and then yo
 
 So why does the numerical computation relate to the geometric projection interpretation?
 
+Losing it a little bit but basically taking the dot product of... two vectors is like projecting the one vector onto the other because you can treat it as if you were projecting onto the unit length version of the one vector and then scaling along its line/dimension. And this works out because dot product is commutative and the projection of one vector onto another is equivalent to the opposite. Idk if that actually makes sense... 
+
+
