@@ -67,3 +67,10 @@ The set of all possible outputs of your matrix is the column space. The span of 
 
 Now he's talking about null space / kernel. This is the set of vectors that map to the origin after transformation. If you have a map from 3D to 2D plane, then the set of vectors orthogonal to the plane will all map to the origin. Presumably relevant when you're solving equations of the form Ax = [0,0] which seems relevant for solving systems of linear equations
 
+** Video 9 **
+
+Dot product. Why does order not matter? He shows that with a symmetrical example, it obviously doesn't matter. But when you double one of the vectors, 
+you can see that the other vector's projection doesn't really change and then you just double the length. Or you halve the length of the doubled vector to get same original result and then double it and same thing? Basically the angle doesn't change at all, just the magnitude along that angle so it doesn't matter which way you rotate / project.
+
+So why does the numerical computation relate to the geometric projection interpretation?
+
