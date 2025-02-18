@@ -53,7 +53,7 @@ Ah he's working through the actual formula now. For diagonal matrix, it's straig
 
 He finishes with a question: why is det(M1*M2) = det(M1) * det(M2)? My intuition is that it's because it measure how much the matrix scales up space and scaling is transitive. 
 
-** Video 7**
+**Video 7**
 
 Talking about inverse matrices. It's already clocking why some aren't invertible. If you destroy information (zeroing out a variable), then you can't get it back.
 
@@ -67,7 +67,7 @@ The set of all possible outputs of your matrix is the column space. The span of 
 
 Now he's talking about null space / kernel. This is the set of vectors that map to the origin after transformation. If you have a map from 3D to 2D plane, then the set of vectors orthogonal to the plane will all map to the origin. Presumably relevant when you're solving equations of the form Ax = [0,0] which seems relevant for solving systems of linear equations
 
-** Video 9 **
+**Video 9**
 
 Dot product. Why does order not matter? He shows that with a symmetrical example, it obviously doesn't matter. But when you double one of the vectors, 
 you can see that the other vector's projection doesn't really change and then you just double the length. Or you halve the length of the doubled vector to get same original result and then double it and same thing? Basically the angle doesn't change at all, just the magnitude along that angle so it doesn't matter which way you rotate / project.
@@ -76,4 +76,35 @@ So why does the numerical computation relate to the geometric projection interpr
 
 Losing it a little bit but basically taking the dot product of... two vectors is like projecting the one vector onto the other because you can treat it as if you were projecting onto the unit length version of the one vector and then scaling along its line/dimension. And this works out because dot product is commutative and the projection of one vector onto another is equivalent to the opposite. Idk if that actually makes sense... 
 
+**Video 14**
 
+Eigenvalues and eigenvectors.
+
+Starts off talking about how during a transformation, most vectors will get knocked off their "span", where "span" means basically the infinite line drawn through the vector from tip to tip. But sometimes (always?) there exists a vector / span where the transformation only scales it along its span. 
+There can be multiple such spans. These special vectors are the eigenvectors. He uses [-1,1] as a specific example from [[3,0], [1,2]] (that's grouping by col btw) but it's not clear to me it has to be specifically -1,1 or if it's just -λ,λ.
+
+And the eigenvalue is just the factor by which the eigenvector is stretched or squished.
+
+If during a 3D rotation, you find an eigenvector, then this eigenvector also represents the axis of rotation. Relevant bc easier to think about degrees of rotation around center of rotation vs the full transformation matrix (eigenvalue would be 1 bc rotations don't stretch or squish)
+
+So far, we've intuited what a matrix transformation does by seeing where the basis vectors end up, but we can instead get a feel by learning the eigenvectors. 
+
+Oh wow, did I really never grok this myself? Av = λv implies that applying the transformation A to v is equivalent to just scaling v. 
+
+And now it links back to determinants because if you want to find an eigenvector v, then you solve (A-λI)v = 0 which implies the determinant of (A - λI) = 0 which only happens if A - λI squishes the vectors down into a lower dimension. Which makes sense right? Since they won't leave their span.
+
+So basically you're solving for λ here and finding the case when det() = 0
+
+Ah and yeah here we go. You just plug -λ terms in the diagonal (I think diagonal but we're just doing 2D for now) and then when you do the calc, you end up with a quadratic in λ which gives you two eigenvalues. And then to find the corresponding eigenvectors, you plug each λ value into the subtraction matrix and multiply against vector v and = 0
+
+Some matrices have no eigenvectors. 90 degree rotation for example
+
+OOOOOO he finally touches on _i_. He says since the quadratic of the rotation matrix only has imaginary roots, then it has no eigenvectors. But he has this little sidebar that highlights this is not a coincidental relation, but that this rotation matrix is related to _i_ being related to rotation in the complex plane
+
+For a shear, there's only one eigenvalue. And it becomes apparent when you look at the diagonal. 
+
+Pure scaling has only 1 eigenvalue, but every vector is now an eigenvector with that eigenvalue
+
+Diagonal matrix is actually an eigenbasis. 
+
+This becomes relevant because if you have enough eigenvalues, you can change your basis of your matrix into the eigenbasis which makes it much easier to work with
