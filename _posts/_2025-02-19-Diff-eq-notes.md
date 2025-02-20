@@ -41,3 +41,13 @@ behavior looks quite similar for the most part (at least within a certain region
 Solving a ODE "numerically" means just programming it basically and simulating. I imagine there is probably more nuance to it than that
 
 Touches on chaos theory: for some class of DEs, small shifts in initial conditions lead to greater changes down the road so your simulations compound errors and stop being accurate
+
+**What are PDEs**
+
+He breaks heat eq down to discretized version and explains that a pt T2 will flow to the average between its neighbors. 
+This can be rewritten as the diff of diffs dT3 - dT1 which can be notated as ddT1.
+This discrete second difference is analogous to the second derivative!
+
+He says that in a PDE, infinitely many variables are changing. I don't fully grok it but I guess it's the temperature at each point in space & time. Which tbh I don't fully get why that is different than the ODE case? Well I suppose in the orbit example, you have finite planets orbiting. In the heat example, you have infinitely many points along a rod to keep track of. So I guess it makes sense. 
+
+Defines the Laplacian. Basically is just the addition of the different spatial second derivatives. Basically just the multi dimensional version asking, how much does a point differ from the average of its neighbhors? 
