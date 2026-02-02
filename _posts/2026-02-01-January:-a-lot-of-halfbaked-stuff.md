@@ -14,13 +14,13 @@ Things this month:
 - volleyball analysis app. probably the most involved, I built a labeling pipeline and trained a model to detect events within a beach volleyball match. abandoned it when someone on Twitter produced a better version
 - supply chain analysis tool
 
-<img width="1227" height="796" alt="image" src="https://github.com/user-attachments/assets/6f184c5a-4f1c-41b5-9f7d-eaafcaea3ab8" />
+<img alt="image" src="https://github.com/user-attachments/assets/6f184c5a-4f1c-41b5-9f7d-eaafcaea3ab8" style="max-width: 100%; height: auto;" />
 
-<img width="1482" height="788" alt="image" src="https://github.com/user-attachments/assets/bb074cc5-189a-4f17-9048-803d585f9b1d" />
+<img alt="image" src="https://github.com/user-attachments/assets/bb074cc5-189a-4f17-9048-803d585f9b1d" style="max-width: 100%; height: auto;" />
 
-<img width="754" height="773" alt="image" src="https://github.com/user-attachments/assets/95d3efbc-5569-4656-9367-499701cc530e" />
+<img alt="image" src="https://github.com/user-attachments/assets/95d3efbc-5569-4656-9367-499701cc530e" style="max-width: 100%; height: auto;" />
 
-<img width="1058" height="802" alt="image" src="https://github.com/user-attachments/assets/81b36bc7-1535-471a-ada9-37b167e5a266" />
+<img alt="image" src="https://github.com/user-attachments/assets/81b36bc7-1535-471a-ada9-37b167e5a266" style="max-width: 100%; height: auto;" />
 
 
 Anthropic just published a study showing we’re not more productive with agents. I could believe it I guess. My peak coding ability was a few years ago when I was actively working on real side projects every day before and after work. I basically had the pandas API memorized somehow and could solve most LC mediums in under 5 minutes. The list of above projects maybe all could’ve been doable within a single day if I really tried? But the thing is - I don’t have to try now. I got a very viable POC with minimal effort. And I get to focus on the fun part. The volleyball app really is involved and you have to be thoughtful with how you label the data. But I didn’t have to waste hours on stupid playback issues or obscure off-by-1 bugs that would ruin my labels in some nefarious way. 
