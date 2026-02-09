@@ -15,12 +15,33 @@
 
 html {
   font-size: 100%;
+  min-height: 100%;
 }
 
 body {
-	background: $white;
   font: 18px/1.4 $helvetica;
   color: $darkGray;
+  min-height: 100vh;
+  margin: 0;
+  padding: 40px 20px;
+  box-sizing: border-box;
+  background:
+    linear-gradient(to bottom, rgba(255,255,255,0.1), rgba(255,255,255,0.05)),
+    url('https://upload.wikimedia.org/wikipedia/commons/c/c4/Jean-Baptiste-Camille_Corot_051.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  background-color: #5a6b4d; // Fallback color while image loads
+}
+
+.content-card {
+  max-width: 800px;
+  margin: 0 auto;
+  background: #faf8f5; // Warm off-white
+  border-radius: 24px;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.2), 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px 0;
+  min-height: calc(100vh - 80px);
 }
 
 .container {
@@ -156,7 +177,7 @@ img {
 
 .masthead {
   padding: 20px 0;
-  border-bottom: 1px solid $lightGray;
+  border-bottom: 1px solid #e8e4df;
 
   @include mobile {
     text-align: center;
@@ -243,7 +264,7 @@ nav {
 
 .posts > .post {
   padding-bottom: 2em;
-  border-bottom: 1px solid $lightGray;
+  border-bottom: 1px solid #e8e4df;
 }
 
 .posts > .post:last-child {
@@ -273,9 +294,8 @@ nav {
 
 .wrapper-footer {
   margin-top: 50px;
-  border-top: 1px solid #ddd;
-  border-bottom: 1px solid #ddd;
-  background-color: $lightGray;
+  border-top: 1px solid #e8e4df;
+  padding: 0 10px;
 }
 
 footer {
