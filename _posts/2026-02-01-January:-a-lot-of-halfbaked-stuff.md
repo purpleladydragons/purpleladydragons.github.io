@@ -1,4 +1,6 @@
-New year’s resolution for me was to post something once a month. Doesn’t matter what, ideally something meaningful / useful / tangible, but whatever.
+---
+title: A lot of half-baked stuff
+---
 
 The theme of January for me was a lot of agent-fueled ADHD. With the improvements in agent coding, my “productivity” has gone up a lot. I redid some old side projects and worked on several new ideas. It’s really amazing how something that took me multiple weekends and nights can be banged out in an hour or less now with zero manual coding. However, most of the new projects are still totally halfbaked. But what should I expect from almost zero effort? I imagine in a year from now, these will be 80% baked if not full-baked with the same level of effort. 
 
