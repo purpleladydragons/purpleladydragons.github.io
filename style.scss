@@ -1,309 +1,285 @@
 ---
 ---
 
-//
-// IMPORTS
-//
-
 @import "reset";
 @import "variables";
-// Syntax highlighting @import is at the bottom of this file
 
-/**************/
-/* BASE RULES */
-/**************/
+$paper: #fffefd;
+$ink: #302d29;
+$heading: #26221d;
+$muted: #6a7277;
+$accent: #56778f;
+$trim: #bed3e1;
+$sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+$serif: "Newsreader", Georgia, "Times New Roman", serif;
 
 html {
-  font-size: 100%;
   min-height: 100%;
+  font-size: 100%;
 }
 
 body {
-  font: 18px/1.4 $helvetica;
-  color: $darkGray;
   min-height: 100vh;
   margin: 0;
-  padding: 40px 20px;
-  box-sizing: border-box;
+  padding: 40px 24px 64px;
+  color: $ink;
+  font: 16px/1.55 $sans;
   background:
-    linear-gradient(to bottom, rgba(255,255,255,0.1), rgba(255,255,255,0.05)),
-    url('https://upload.wikimedia.org/wikipedia/commons/c/c4/Jean-Baptiste-Camille_Corot_051.jpg');
-  background-size: cover;
-  background-position: center;
-  background-attachment: fixed;
-  background-color: #5a6b4d; // Fallback color while image loads
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05)),
+    url('https://upload.wikimedia.org/wikipedia/commons/c/c4/Jean-Baptiste-Camille_Corot_051.jpg') center / cover fixed;
+  background-color: #5a6b4d;
 }
 
-.content-card {
-  max-width: 800px;
-  margin: 0 auto;
-  background: #faf8f5; // Warm off-white
-  border-radius: 24px;
-  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.2), 0 2px 8px rgba(0, 0, 0, 0.1);
-  padding: 20px 0;
-  min-height: calc(100vh - 80px);
-}
-
-.container {
-  margin: 0 auto;
-  max-width: 740px;
-  padding: 0 10px;
+.site-shell {
   width: 100%;
+  max-width: 920px;
+  margin: 0 auto;
+}
+
+.paper-panel {
+  background: $paper;
+  border: 1px solid #e4e8e9;
+  border-top: 2px solid $trim;
+  box-shadow: 0 2px 10px rgba(35, 45, 52, 0.035);
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: $helveticaNeue;
-  color: $darkerGray;
-  font-weight: bold;
-
-  line-height: 1.7;
-  margin: 1em 0 15px;
-  padding: 0;
-
-  @include mobile {
-    line-height: 1.4;
-  }
+  margin: 1.4em 0 0.5em;
+  color: $heading;
+  font-family: $serif;
+  font-weight: 600;
+  line-height: 1.25;
+  overflow-wrap: break-word;
 }
 
-h1 {
-  font-size: 30px;
-  a {
-    color: inherit;
-  }
-}
+h1 { font-size: 36px; }
+h2 { font-size: 30px; }
+h3 { font-size: 25px; }
+h4, h5, h6 { font-size: 21px; }
 
-h2 {
-  font-size: 24px;
-}
-
-h3 {
-  font-size: 20px;
-}
-
-h4 {
-  font-size: 18px;
-  color: $gray;
-}
-
-p {
-  margin: 15px 0;
-}
+p { margin: 0 0 1em; }
 
 a {
-  color: $blue;
-  text-decoration: none;
-	cursor: pointer;
-  &:hover, &:active {
-    color: $blue;
+  color: $accent;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+
+  &:hover { color: #3d607b; }
+
+  &:focus-visible {
+    outline: 3px solid $accent;
+    outline-offset: 5px;
   }
 }
 
-ul, ol {
-  margin: 15px 0;
-  padding-left: 30px;
+ul, ol { margin: 1em 0; padding-left: 1.5em; }
+ul { list-style-type: disc; }
+ol { list-style-type: decimal; }
+li > ul, li > ol { margin: 0; }
+ul ul { list-style-type: circle; }
+em, i { font-style: italic; }
+strong, b { font-weight: bold; }
+img { max-width: 100%; height: auto; }
+.gmnoprint img { max-width: none; }
+
+::selection { color: $heading; background: #e6eff5; }
+
+.skip-link {
+  position: absolute;
+  top: -100px;
+  left: 24px;
+  z-index: 1;
+  padding: 10px 16px;
+  background: $paper;
+  font-family: $sans;
+
+  &:focus { top: 8px; }
 }
 
-ul {
-  list-style-type: disc;
-}
-
-ol {
-  list-style-type: decimal;
-}
-
-ol ul, ul ol, ul ul, ol ol {
-  margin: 0;
-}
-
-ul ul, ol ul {
-  list-style-type: circle;
-}
-
-em, i {
-  font-style: italic;
-}
-
-strong, b {
-  font-weight: bold;
-}
-
-img {
-  max-width: 100%;
-}
-
-// Fixes images in popup boxes from Google Translate
-.gmnoprint img {
-  max-width: none;
-}
-
-.date {
-  font-style: italic;
-  color: $gray;
-}
-
-// Specify the color of the selection
-::-moz-selection {
-  color: $black;
-  background: $lightGray;
-}
-::selection {
-  color: $black;
-  background: $lightGray;
-}
-
-// Nicolas Gallagher's micro clearfix hack
-// http://nicolasgallagher.com/micro-clearfix-hack/
-.clearfix:before,
-.clearfix:after {
-    content: " ";
-    display: table;
-}
-
-.clearfix:after {
-    clear: both;
-}
-
-/*********************/
-/* LAYOUT / SECTIONS */
-/*********************/
-
-//
-// .masthead
-//
-
-.wrapper-masthead {
-  margin-bottom: 50px;
-}
-
+// The header is its own panel; the painting shows through every gap below it.
 .masthead {
-  padding: 20px 0;
-  border-bottom: 1px solid #e8e4df;
-
-  @include mobile {
-    text-align: center;
-  }
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 32px;
+  padding: 24px 38px;
 }
 
 .site-avatar {
-  float: left;
-  width: 70px;
-  height: 70px;
-  margin-right: 15px;
+  display: block;
+  flex: 0 0 44px;
+  line-height: 0;
 
-  @include mobile {
-    float: none;
-    display: block;
-    margin: 0 auto;
-  }
-
-  img {
-    border-radius: 5px;
-  }
+  img { width: 44px; height: 44px; }
 }
 
-.site-info {
-  float: left;
-
-  @include mobile {
-    float: none;
-    display: block;
-    margin: 0 auto;
-  }
-}
+.site-info { min-width: 0; }
 
 .site-name {
   margin: 0;
-  color: $darkGray;
-  cursor: pointer;
-  font-family: $helveticaNeue;
-  font-weight: 300;
-  font-size: 28px;
-  letter-spacing: 1px;
+  color: $heading;
+  font-family: $serif;
+  font-size: 34px;
+  font-weight: 600;
+  letter-spacing: -0.7px;
+  line-height: 1.2;
+
+  a { color: inherit; text-decoration: none; }
 }
 
 .site-description {
-  margin: -5px 0 0 0;
-  color: $gray;
-  font-size: 16px;
-
-  @include mobile {
-    margin: 3px 0;
-  }
+  margin: 4px 0 0;
+  color: $muted;
+  font: 14px/1.4 $sans;
 }
 
 nav {
-  float: right;
-  margin-top: 23px; // @TODO: Vertically middle align
-  font-family: $helveticaNeue;
-  font-size: 18px;
-
-  @include mobile {
-    float: none;
-    margin-top: 9px;
-    display: block;
-    font-size: 16px;
-  }
+  display: flex;
+  gap: 26px;
+  margin-left: auto;
+  font: 15px/1.4 $sans;
 
   a {
-    margin-left: 20px;
-    color: $darkGray;
-    text-align: right;
-    font-weight: 300;
-    letter-spacing: 1px;
+    padding: 8px 0;
+    color: $accent;
+    text-decoration: none;
 
-    @include mobile {
-      margin: 0 10px;
-      color: $blue;
-    }
+    &:hover, &[aria-current="page"] { text-decoration: underline; }
   }
 }
 
-//
-// .main
-//
-
-.posts > .post {
-  padding-bottom: 2em;
-  border-bottom: 1px solid #e8e4df;
+.posts {
+  display: grid;
+  gap: 32px;
 }
 
-.posts > .post:last-child {
-  padding-bottom: 1em;
-  border-bottom: none;
+.post-card { min-width: 0; }
+
+.post-card-link {
+  display: block;
+  padding: 30px 38px 32px;
+  color: $ink;
+  text-decoration: none;
+  transition: background-color 150ms ease, box-shadow 150ms ease;
+
+  &:hover, &:focus-visible {
+    color: $ink;
+    background-color: #ffffff;
+    box-shadow: 0 4px 16px rgba(35, 45, 52, 0.07);
+
+    h2 { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 4px; }
+  }
 }
 
-.post {
+.post-card-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px 24px;
+  margin-bottom: 14px;
+
+  h2 {
+    min-width: 0;
+    margin: 0;
+    font-size: 30px;
+    font-weight: 600;
+    letter-spacing: -0.6px;
+    text-wrap: pretty;
+  }
+}
+
+.post-date {
+  flex-shrink: 0;
+  color: $muted;
+  font: 12px/1.5 $sans;
+  white-space: nowrap;
+}
+
+.post-preview {
+  overflow-wrap: break-word;
+
+  p { margin: 0 0 0.65em; }
+  p:last-child { margin-bottom: 0; }
+}
+
+.read-more {
+  display: inline-block;
+  margin-top: 18px;
+  color: $accent;
+  font: 500 13px/1.4 $sans;
+}
+
+.read-more-arrow {
+  display: inline-block;
+  margin-left: 6px;
+}
+
+// Individual articles and standalone pages keep a comfortable reading measure.
+.reading-panel {
+  padding: 36px 48px 44px;
+  overflow-wrap: break-word;
+
+  > h1 { margin-top: 0; }
+
+  .entry {
+    max-width: 68ch;
+    margin: 0 auto;
+  }
+
   blockquote {
-    margin: 1.8em .8em;
-    border-left: 2px solid $gray;
-    padding: 0.1em 1em;
-    color: $gray;
-    font-size: 22px;
+    margin: 1.5em 0;
+    padding: 0.15em 0 0.15em 1.2em;
+    border-left: 2px solid $trim;
+    color: $muted;
     font-style: italic;
+
+    p:last-child { margin-bottom: 0; }
   }
 
-  .comments {
-    margin-top: 10px;
+  pre {
+    max-width: 100%;
+    overflow-x: auto;
+    padding: 16px;
+    font: 14px/1.6 monospace;
   }
 
-  .read-more {
-    text-transform: uppercase;
-    font-size: 15px;
+  code { font-family: monospace; font-size: 0.85em; }
+  pre code { font-size: inherit; }
+  table { display: block; max-width: 100%; overflow-x: auto; margin: 1.5em 0; }
+  th, td { padding: 8px 12px; border-bottom: 1px solid #e4e8e9; text-align: left; }
+  th { font-weight: bold; }
+  .comments { margin-top: 32px; }
+}
+
+.article-heading {
+  margin-bottom: 28px;
+
+  h1 { margin: 0 0 10px; }
+}
+
+@include mobile {
+  body { padding: 18px 14px 36px; font-size: 16px; }
+  .masthead { flex-wrap: wrap; gap: 14px; margin-bottom: 22px; padding: 22px; }
+  .site-name { font-size: 29px; }
+  nav { flex-basis: 100%; margin-left: 0; gap: 24px; }
+  .posts { gap: 22px; }
+  .post-card-link { padding: 24px 22px; }
+  .post-card-heading { flex-direction: column; gap: 6px; margin-bottom: 14px; }
+  .post-card-heading h2 { font-size: 27px; }
+  .post-preview {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 9;
+    overflow: hidden;
   }
+  .reading-panel { padding: 26px 22px; }
+  h1 { font-size: 29px; }
 }
 
-.wrapper-footer {
-  margin-top: 50px;
-  border-top: 1px solid #e8e4df;
-  padding: 0 10px;
+@media (prefers-reduced-motion: reduce) {
+  .post-card-link { transition: none; }
 }
 
-footer {
-  padding: 20px 0;
-  text-align: center;
-}
-
-// Settled on moving the import of syntax highlighting to the bottom of the CSS
-// ... Otherwise it really bloats up the top of the CSS file and makes it difficult to find the start
 @import "highlights";
 @import "svg-icons";

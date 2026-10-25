@@ -2,15 +2,14 @@
 layout: default
 ---
 <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
-<article class="post">
-  <h1>{{ page.title }}</h1>
+<article class="post reading-panel paper-panel">
+  <header class="article-heading">
+    <h1>{{ page.title }}</h1>
+    <time class="post-date" datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: "%B %-d, %Y" }}</time>
+  </header>
 
   <div class="entry">
     {{ content }}
-  </div>
-
-  <div class="date">
-    Written on {{ page.date | date: "%B %e, %Y" }}
   </div>
 
   {% include disqus.html %}

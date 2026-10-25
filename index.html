@@ -4,15 +4,19 @@ layout: default
 
 <div class="posts">
   {% for post in site.posts %}
-    <article class="post">
+    <article class="post-card">
+      <a class="post-card-link paper-panel" href="{{ site.baseurl }}{{ post.url }}" aria-labelledby="post-title-{{ forloop.index }}">
+        <header class="post-card-heading">
+          <h2 id="post-title-{{ forloop.index }}">{{ post.title | escape }}</h2>
+          <time class="post-date" datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: "%b %-d, %Y" }}</time>
+        </header>
 
-      <h1><a href="{{ site.baseurl }}{{ post.url }}">{{ post.title }}</a></h1>
+        <div class="post-preview">
+          {% include post-preview.html post=post %}
+        </div>
 
-      <div class="entry">
-        {{ post.excerpt }}
-      </div>
-
-      <a href="{{ site.baseurl }}{{ post.url }}" class="read-more">Read More</a>
+        <span class="read-more" aria-hidden="true">Continue reading <span class="read-more-arrow">&rarr;</span></span>
+      </a>
     </article>
   {% endfor %}
 </div>

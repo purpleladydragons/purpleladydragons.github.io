@@ -55,6 +55,14 @@ baseurl: ""
 
 permalink: /:title/
 
+# Apply our post template even to posts written without YAML front matter.
+defaults:
+  - scope:
+      path: ""
+      type: posts
+    values:
+      layout: post
+
 # The release of Jekyll Now that you're using
 version: v1.2.0
 
@@ -77,7 +85,7 @@ gems:
   - jekyll-sitemap # Create a sitemap using the official Jekyll sitemap gem
   - jekyll-feed # Create an Atom feed using the official Jekyll feed gem
 
-theme: jekyll-theme-minimal
+# theme: jekyll-theme-minimal  # Using custom styles instead
 
 # Exclude these files from your production _site
 exclude:

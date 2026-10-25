@@ -1,0 +1,23 @@
+{%- comment -%}
+  Show up to two opening body paragraphs, capped at 120 words. Using paragraph
+  text keeps headings, image-only openings, and code blocks out of the cards.
+  Strip inline links because the entire card is already a link to the post.
+{%- endcomment -%}
+{%- assign paragraphs = include.post.content | markdownify | split: '</p>' -%}
+{%- assign preview_paragraphs = 0 -%}
+{%- assign words_remaining = 120 -%}
+{%- for fragment in paragraphs -%}
+  {%- unless fragment contains '<p>' -%}{%- continue -%}{%- endunless -%}
+  {%- assign paragraph = fragment | split: '<p>' | last -%}
+  {%- if paragraph contains 'href="#' -%}{%- continue -%}{%- endif -%}
+  {%- assign text = paragraph | strip_html | normalize_whitespace | strip -%}
+  {%- if text == '' -%}{%- continue -%}{%- endif -%}
+  <p>{{ text | truncatewords: words_remaining, '…' | escape_once }}</p>
+  {%- assign word_count = text | number_of_words -%}
+  {%- assign words_remaining = words_remaining | minus: word_count -%}
+  {%- assign preview_paragraphs = preview_paragraphs | plus: 1 -%}
+  {%- if preview_paragraphs == 2 or words_remaining <= 0 -%}{%- break -%}{%- endif -%}
+{%- endfor -%}
+{%- if preview_paragraphs == 0 -%}
+  <p>{{ include.post.excerpt | strip_html | normalize_whitespace | truncatewords: 120, '…' | escape_once }}</p>
+{%- endif -%}
